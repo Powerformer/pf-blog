@@ -4,17 +4,6 @@
 
 > **注意**: 一般的变量命名会以涵盖标题为主，涉及四个值得变量命名会使用`top, right, bottom, left`, 涉及少于四个或者大于四个的变量命名会使用`first, second ...`。
 
-## 目录 <a id="table-of-contents"></a>
-
-  1. [代码风格](#code-style)
-  2. [字符串](#Strings)
-  3. [解构赋值](#Destructuring)
-  4. [对象](#Objects)
-  5. [数组](#Arrays)
-  6. [函数](#Functions)
-  7. [类](#Classes)
-  8. [模块](#Modules)
-
 ## 代码风格 <a id="code-style"></a>
 
   - [1.1](#code-style-indent) 语句块内每行代码缩进`2`个空格。
