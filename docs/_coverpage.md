@@ -7,6 +7,6 @@
 - ``` ```
 
 [GitHub](https://github.com/Powerformer)
-[Go to Version](/)
+[Go to Version](version-plan/)
 
 ![color](#000)
