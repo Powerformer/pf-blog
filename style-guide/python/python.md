@@ -2,9 +2,112 @@
 
 全部内容请参考[Python官网](https://www.python.org/dev/peps/pep-0008/)。以下为需要关注的几点。
 
-## 缩进
+## 代码布局
+
+### 缩进
 
 使用 4 格缩进，只能使用空格，不能用 Tab。
+
+### 空行的使用
+
+1.  最外层函数定义前后需要加两个空格。
+
+```python
+(blank_line)
+(another_blank_line)
+def top_level_function():
+    pass
+(blank_line)
+(another_blank_line)
+```
+
+2.  类的定义前后需要加两个空格。
+
+```python
+(blank_line)
+(another_blank_line)
+class SomeClass(object):
+    pass
+(blank_line)
+(another_blank_line)
+```
+
+3.  类中的方法前后加一个空格。
+
+```python
+class SomeClass(object):
+
+    def method_one():
+        pass
+
+    def method_two():
+      	pass
+
+```
+
+4.  适度地使用空格对代码进行**逻辑分区**。
+
+### 编码问题
+
+1.  不要使用编码声明（encoding declaration）。
+
+2.  命名标识符时，尽可能地使用ASCII范围内的字符（仅当测试非ASCII功能以及书写源码作者名时使用）：
+
+
+###  `import` 语句
+
+1.  使用 `import ...` 语法，一次只能导入一个模块：
+
+```python
+# bad
+import sys, os
+
+# good
+import os
+import sys
+```
+
+而 `from ... import ...` 语法则应在一行中导入所有需要的语法元素：
+
+```python
+from subprocess import Popen, PIPE
+```
+
+2.  多个 `import` 的组织顺序：**标准库 - 相关的第三方库 - 本地应用/特定库引入**。这三组 `import` 语句之间应当用一行空格隔开。对照以上规则，来看一个 Django 项目中的一个文件中 `import` 的使用。
+
+```python
+import uuid
+from os.path import abspath
+
+from django.db import models
+from django.utils.translation import ugettext_lazy as _
+
+from django_extensions.db.models import TimeStampedModel
+
+from users.models import Profile
+from home.models import Post
+```
+
+### 模块级双下划线名
+
+模块级双下划线名（Module level dunder names），例如 `__all__`、`__author__`等，应当位于模块文档字符串（module docstring）之后，任何 `import` 语句之前（除了 `from __future__` ）。
+
+```python
+"""This is the example module.
+
+This module does stuff.
+"""
+
+from __future__ import with_statement
+
+__all__ = ['a', 'b', 'c']
+__version__ = '1.0.0'
+__author__ = 'Powerformer Inc.'
+
+import os
+import sys
+```
+
 
 ## 命名规范
 
@@ -50,77 +153,121 @@ globalConstant = 0.75
 GLOBAL_CONSTANT = 0.75
 ```
 
+## 空格的使用
 
-## 空行的使用
+1.  **避免**代码行末尾的空格。可以通过相应的编辑器插件轻松实现。
 
-1.  最外层函数定义前后需要加两个空格。
+2. 运算符两边的空格。
 
-```python
-(blank_line)
-(another_blank_line)
-def top_level_function():
-    pass
-(blank_line)
-(another_blank_line)
-```
-
-2.  类的定义前后需要加两个空格。
-
-```python
-(blank_line)
-(another_blank_line)
-class SomeClass(object):
-    pass
-(blank_line)
-(another_blank_line)
-```
-
-3.  类中的方法前后加一个空格。
-
-```python
-class SomeClass(object):
-
-    def method_one():
-        pass
-
-    def method_two():
-      	pass
-
-```
-
-4.  适度地使用空格对代码进行**逻辑分区**。
-
-##  `import` 语句
-
-1.  使用 `import ...` 语法，一次只能导入一个模块：
+- 在二元运算符两边加空格。
 
 ```python
 # bad
-import sys, os
+i=i+1
 
 # good
-import os
-import sys
+i = i + 1
 ```
 
-而 `from ... import ...` 语法则应在一行中导入所有需要的语法元素：
+- 当表达式中出现优先级不同的运算符时，在优先级最低的运算符两边加空格，其他运算符不要加。
 
 ```python
-from subprocess import Popen, PIPE
+# bad
+hypot2 = x * x + y * y
+
+# good
+hypot2 = x*x + y*y
 ```
 
-2.  多个 `import` 的组织顺序：**标准库 - 相关的第三方库 - 本地应用/特定库引入**。这三组 `import` 语句之间应当用一行空格隔开。对照以上规则，来看一个 Django 项目中的一个文件中 `import` 的使用。
+3.  **避免**以下几种类型的多余空格。
+
+- 在定义函数关键词参数（或传入关键词参数）时加入空格。
 
 ```python
-import uuid
-from os.path import abspath
+# bad
+def complex(real, imag = 0.0):
+    return magic(r = real, i = imag)
 
-from django.db import models
-from django.utils.translation import ugettext_lazy as _
-
-from django_extensions.db.models import TimeStampedModel
-
-from users.models import Profile
-from home.models import Post
+# good
+def complex(real, imag=0.0):
+    return magic(r=real, i=imag)
 ```
 
+- 在括号符号内直接加入空格。
+
+```python
+# bad
+spam( ham[ 1 ], { eggs: 2 } )
+
+# good
+spam(ham[1], {eggs: 2})
+```
+
+- 列表（或元组）最后一个元素的逗号后加入空格。
+
+```python
+# bad
+foo = (0, )
+
+# good
+foo = (0,)
+```
+
+- 在逗号、冒号或分号之前加入空格。
+
+```python
+# bad
+x , y = y , x
+
+# good
+x, y = y, x
+```
+- 切片语法中的多余空格。
+
+```python
+# bad
+ham[lower + offset:upper + offset]
+ham[1: 9], ham[1 :9], ham[1:9 :3]
+ham[lower : : step]
+ham[ : upper]
+
+# good
+ham[lower+offset : upper+offset]
+ham[1:9], ham[1:9:3]
+ham[lower::step]
+ham[:upper]
+```
+
+- 函数调用中的多余空格。
+
+```python
+# bad
+spam (1)
+
+# good
+spam(1)
+```
+
+- 索引中的多余空格。
+
+```python
+# bad
+dct ['key'] = lst [index]
+
+# good
+dct['key'] = lst[index]
+```
+
+- 为了对齐赋值运算符而产生的多余空格。
+
+```python
+# bad
+x             = 1
+y             = 2
+long_variable = 3
+
+# good
+x = 1
+y = 2
+long_variable = 3
+```
