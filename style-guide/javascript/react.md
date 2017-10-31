@@ -57,7 +57,7 @@
         - CourseOutline.js
     ```
 
-  - [1.3](#static-name) 项目中，静态资源 / 测试 文件夹名使用小写字母。
+  - [1.3](#static-name) 项目中，顶级文件夹目录 / 静态资源 / 测试 文件夹名使用小写字母。
 
     ```javascript
     // image
@@ -76,4 +76,18 @@
       - MyTest.js
     ```
 
+  - 文件名全局唯一，文件名要与文件内容主体相关。
+  ``` 
+  // bad
+  - Course.js
+  import { connect } from 'react-redux';
+  const CourseContainer = function () {};
+  export default CourseContainer;
+
+  // good
+  - CourseContainer.js
+  import { connect } from 'react-redux';
+  const CourseContainer = function () {};
+  export default CourseContainer;
+  ```
 }
