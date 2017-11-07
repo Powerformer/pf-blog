@@ -111,17 +111,13 @@ import sys
 
 ## 命名规范
 
-1.  任何命名都应当能清晰地描述其功能：
+### 首要原则
 
-```python
-# bad
-s = 50
+命名应着重反映**用法**，而不是**实现方式**。
 
-# good
-student_num = 50
-```
+### 风格规定
 
-2.  变量、函数（方法）、模块和包的命名都应使用 `snake_case` 。
+- 变量、函数（方法）、模块和包的命名都应使用 `snake_case` ，即全部字母小写，用单下划线相连接。
 
 ```python
 # bad
@@ -131,7 +127,7 @@ someValue = 100
 some_value = 100
 ```
 
-3.  类名应当使用 `PascalCase` 。
+- 类名应当使用 `PascalCase` ，即每个单词首字母大写。
 
 ```python
 # bad
@@ -143,7 +139,7 @@ class SomeClass(object):
     pass
 ```
 
-4.  （全局）常量应当全部大写，并且用下划线相连。
+-（全局）常量应当全部大写，并且用下划线相连。
 
 ```python
 # bad
