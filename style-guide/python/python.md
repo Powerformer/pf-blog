@@ -269,3 +269,96 @@ x = 1
 y = 2
 long_variable = 3
 ```
+
+## 注释
+
+### 首要原则
+
+- 永远保证注释和代码是同步更新的。
+
+- 注释应当是完整的句子，第一个字母应当大写（除非开头是一个全部小写的标识符），`#`与注释语句之间应包含一个空格。
+
+```python
+# This should be a complete sentence.
+some_object.do_something()
+```
+
+- 用英语书写注释。关于规范，参考 *The Elements of Style* (Strunk, W., Jr. and White, E.B.)。
+
+### 块级注释
+
+```python
+# Lorem ipsum dolor sit amet consectetur adipisicing elit. Totam
+# quaerat nam laborum quibusdam deserunt! Alias, vel natus? Quae
+# architecto quia consectetur adipisci culpa nisi sapiente nihil
+# distinctio recusandae tempora.
+#
+# Harum reiciendis quas nam adipisci dolor quasi, possimus vitae
+# quaerat nemo ad? Placeat eligendi non eum quidem accusamus
+# voluptas perferendis et!
+do_something()
+```
+
+- 块级注释用于解释其后所有（或部分）的代码，并且与被注释的代码保持相同的缩进等级。
+
+- 每一行内容都以 `#` 和**一个空格**开头（除非此行在注释内是需要缩进的）。
+
+- 块级注释内的段落之间如果有空行，那么此行仅需包含一个 `#` 。
+
+### 内联注释
+
+```python
+inline_comment = "This is an inline comment."   # Use it sparingly
+```
+
+- 尽量减少内联注释的使用。
+
+- 注释应当与被注释的语句相隔**至少两个空格**。
+
+- 不要写显而易见的注释。
+
+```python
+# bad
+x = x + 1   # Increment x
+
+# good
+x = x + 1   # Compensate for border
+```
+
+### 文档字符串
+
+- 为**所有**公共模块、函数、类和方法写文档字符串。对于私有方法来说，文档字符串不是必要的，但是应该有一些注释来表明其功能。
+
+- 如果文档字符串有多行，那么结尾的 `"""` 应当单独在最后一行。
+
+```python
+# Don't do this.
+"""Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse
+molestias ut qui quidem ad nihil? Cumque tenetur maiores excepturi
+laboriosam."""
+
+# This is good.
+"""Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse
+molestias ut qui quidem ad nihil? Cumque tenetur maiores excepturi
+laboriosam.
+"""
+
+# This is also good.
+"""
+Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse
+molestias ut qui quidem ad nihil? Cumque tenetur maiores excepturi
+laboriosam.
+"""
+```
+
+- 如果文档字符串仅有一行，那么结尾的 `"""` 应当在同一行。
+
+```python
+# bad
+"""
+Lorem ipsum dolor sit amet.
+"""
+
+# good
+"""Lorem ipsum dolor sit amet."""
+```
