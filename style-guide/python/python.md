@@ -13,23 +13,33 @@
 - 最外层函数定义前后需要加两个空格。
 
 ```python
-(blank_line)
-(another_blank_line)
+import os
+
+
 def top_level_function():
     pass
-(blank_line)
-(another_blank_line)
+
+
+def another_function():
+    pass
+
+
 ```
 
 - 类的定义前后需要加两个空格。
 
 ```python
-(blank_line)
-(another_blank_line)
+from django import db
+
+
 class SomeClass(object):
     pass
-(blank_line)
-(another_blank_line)
+
+
+class AnotherClass(object):
+    pass
+
+
 ```
 
 - 类中的方法前后加一个空格。
