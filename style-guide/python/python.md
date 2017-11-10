@@ -372,3 +372,221 @@ Lorem ipsum dolor sit amet.
 # good
 """Lorem ipsum dolor sit amet."""
 ```
+
+# PEP20（Python之禅）
+
+输入 `import this` 即可查看 *The Zen of Python*（Python之禅）的全部内容。
+
+以下代码实例均摘自 [Hunter Blanks 的演讲](http://artifex.org/~hblanks/talks/2011/pep20_by_example.pdf)。
+
+## 美观胜于丑陋
+
+不要盲目追求代码的简洁而牺牲可读性，这会让代码变得“丑陋”。
+
+```python
+"""
+Give me a function that takes a list of numbers and returns only the
+even ones, divided by two.
+"""
+# bad
+halve_evens_only = lambda nums: map(lambda i: i/2, filter(lambda i: not i%2, nums))
+
+# good
+def halve_evens_only(nums):
+    return [i/2 for i in nums if not i % 2]
+```
+
+## 显式胜于隐式
+
+不要依赖所谓的“惯例”，让从来没有读过你代码的人也能知道你在做什么。
+
+```python
+"""
+Load the cat, dog, and mouse models so we can edit instances of them.
+"""
+# bad
+def load():
+    from menagerie.cat.models import *
+    from menagerie.dog.models import *
+    from menagerie.mouse.models import *
+
+# good
+def load():
+    from menagerie.models import cat as cat_models
+    from menagerie.models import dog as dog_models
+    from menagerie.models import mouse as mouse_models
+```
+
+## 简单胜于复杂
+
+如果完成同一件事，可以用更简单的方法（例如选择更好的库），那就毫不犹豫地采用。
+
+```python
+"""
+Can you write out these measurements to disk?
+"""
+measurements = [
+    {'weight': 392.3, 'color': 'purple', 'temperature': 33.4},
+    {'weight': 34.0, 'color': 'green', 'temperature': -3.1},
+    ]
+
+# bad
+def store(measurements):
+    import sqlalchemy
+    import sqlalchemy.types as sqltypes
+
+    db = sqlalchemy.create_engine('sqlite:///measurements.db')
+    db.echo = False
+    metadata = sqlalchemy.MetaData(db)
+    table = sqlalchemy.Table('measurements', metadata,
+        sqlalchemy.Column('id', sqltypes.Integer, primary_key=True),
+        sqlalchemy.Column('weight', sqltypes.Float),
+        sqlalchemy.Column('temperature', sqltypes.Float),
+        sqlalchemy.Column('color', sqltypes.String(32)),
+        )
+    table.create(checkfirst=True)
+
+    for measurement in measurements:
+        i = table.insert()
+        i.execute(**measurement)
+
+# good
+def store(measurements):
+    import json
+    with open('measurements.json', 'w') as f:
+    f.write(json.dumps(measurements))
+```
+
+## 复杂胜于繁冗
+
+如果不能做到用简单的方式解决问题，那就退而求其次用复杂的方法，但是不应让程序过于繁冗，结构应保持明确。
+
+```python
+"""
+Can you write out those same measurements to a MySQL DB? I think we're
+gonna have some measurements with multiple colors next week, by the way.
+"""
+# bad
+def store(measurements):
+    import sqlalchemy
+    import sqlalchemy.types as sqltypes
+
+    db = sqlalchemy.create_engine('sqlite:///measurements.db')
+    db.echo = False
+    metadata = sqlalchemy.MetaData(db)
+    table = sqlalchemy.Table('measurements', metadata,
+        sqlalchemy.Column('id', sqltypes.Integer, primary_key=True),
+        sqlalchemy.Column('weight', sqltypes.Float),
+        sqlalchemy.Column('temperature', sqltypes.Float),
+        sqlalchemy.Column('color', sqltypes.String(32)),
+        )
+    table.create(checkfirst=True)
+
+    for measurement in measurements:
+        i = table.insert()
+        i.execute(**measurement)
+
+# good
+def store(measurements):
+    import MySQLdb
+    db = MySQLdb.connect(user='user', passwd="password", host='localhost', db="db")
+
+    c = db.cursor()
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS measurements
+          id int(11) NOT NULL auto_increment,
+          weight float,
+          temperature float,
+          color varchar(32)
+          PRIMARY KEY id
+          ENGINE=InnoDB CHARSET=utf8
+          """)
+
+    insert_sql = (
+        "INSERT INTO measurements (weight, temperature, color) "
+        "VALUES (%s, %s, %s)")
+
+    for measurement in measurements:
+        c.execute(insert_sql,
+            (measurement['weight'], measurement['temperature'], measurement['color'])
+            )
+```
+
+## 减少嵌套的使用
+
+```python
+"""Identify this animal. """
+# bad
+def identify(animal):
+    if animal.is_vertebrate():
+        noise = animal.poke()
+        if noise == 'moo':
+            return 'cow'
+        elif noise == 'woof':
+            return 'dog'
+    else:
+        if animal.is_multicellular():
+            return 'Bug!'
+        else:
+            if animal.is_fungus():
+                return 'Yeast'
+            else:
+                return 'Amoeba'
+
+# good
+def identify(animal):
+    if animal.is_vertebrate():
+        return identify_vertebrate()
+    else:
+        return identify_invertebrate()
+
+def identify_vertebrate(animal):
+    noise = animal.poke()
+    if noise == 'moo':
+        return 'cow'
+    elif noise == 'woof':
+        return 'dog'
+
+def identify_invertebrate(animal):
+    if animal.is_multicellular():
+        return 'Bug!'
+    else:
+        if animal.is_fungus():
+            return 'Yeast'
+        else:
+            return 'Amoeba'
+```
+
+## 稀疏优于密集
+
+适当地使用空行来划分代码段中的各个部分，会很大程度上增强可读性。这实际上运用了“亲密性”的设计原则（可参考[《写给大家看的设计书》](http://www.ituring.com.cn/book/1757)）。
+
+```python
+"""Parse an HTTP response object, yielding back new requests or data. """
+# bad
+def process(response):
+    selector = lxml.cssselect.CSSSelector('#main > div.text')
+    lx = lxml.html.fromstring(response.body)
+    title = lx.find('./head/title').text
+    links = [a.attrib['href'] for a in lx.find('./a') if 'href' in a.attrib]
+    for link in links:
+        yield Request(url=link)
+    divs = selector(lx)
+    if divs: yield Item(utils.lx_to_text(divs[0]))
+
+# good
+def process(response):
+    lx = lxml.html.fromstring(response.body)
+
+    title = lx.find('./head/title').text
+
+    links = [a.attrib['href'] for a in lx.find('./a') if 'href' in a.attrib]
+    for link in links:
+        yield Request(url=link)
+
+    selector = lxml.cssselect.CSSSelector('#main > div.text')
+    divs = selector(lx)
+    if divs:
+        bodytext = utils.lx_to_text(divs[0])
+        yield Item(bodytext)
+```
