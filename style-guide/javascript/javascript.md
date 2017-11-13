@@ -4,7 +4,7 @@
 
 > **注意**: 一般的变量命名会以涵盖标题为主，涉及四个值得变量命名会使用`top, right, bottom, left`, 涉及少于四个或者大于四个的变量命名会使用`first, second ...`。
 
-## 代码风格 <a id="code-style"></a>
+## 代码风格(Code style)
 
   - [1.1](#code-style-indent) 语句块内每行代码缩进`2`个空格。
 
@@ -27,7 +27,7 @@
       }
     }
     ```
-    
+
   - [1.2](#code-style-limit-row) 每行代码不超过`119`个字符。
 
     ```javascript
@@ -41,24 +41,132 @@
                 excepturi aliquid nemo?";
     ```
 
-**[⬆ back to top](#table-of-contents)**
-  
-## 字符串 <a id="Strings"></a>
 
-  - [2.1](#string-quote-style) 静态字符串一律使用单引号，不使用双引号。动态字符串使用反引号。
+
+
+## 类型(Types)
+
+- **原始类型** :当使用原始类型时，直接是对其 **值** 进行操作。
+
+  - `string`
+  - `number`
+  - `boolean`
+  - `null`
+  - `undefined`
+  - `symbol`
+
+  ```javascript
+  const foo = 1;
+  let bar = foo;
+
+  bar = 9;
+
+  foo === bar; //  => false
+  console.log(foo, bar); // => (1, 9)
+  ```
+
+  - `Symbol`  不能通过`polyfill`  来模拟实现，只有在 `javascript` 宿主环境（browser / node) 原生支持的时候才能使用。
+
+- **复杂类型** : 当使用复杂类型时，是对 **引用** 进行操作。
+
+  - `object`
+  - `array`
+  - `function`
+
+  ```javascript
+  const foo = [1, 2];
+  const bar = foo;
+
+  bar[0] = 9;
+
+  console.log(foo[0], bar[0]); // => 9, 9
+  foo === bar; // => true
+  ```
+
+
+## 引用（Reference）
+
+- 对于所有的 **引用** 都用 `const` 来修饰，避免使用 `var` 。
+
+  >为什么要这么做呢？因为它能确保你不能给 **引用** 重新赋值，这样能减少很多bug，以及让代码更易理解。
+
+  ```javascript
+  // bad
+  var a = 1;
+  var b = 2;
+
+  // good
+  const a = 1;
+  const b = 2;
+  ```
+
+
+
+- 如果你一定得给 **引用** 重新赋值，那么你也应该使用 `let` 而不是 `var` 。
+
+  > 为什么呢？因为 `let` 是块级作用域而 `var` 是函数作用域。
+
+  ```javascript
+  // bad
+  var count = 1;
+  if (true) {
+    count += 1;
+  }
+
+  // good
+  let count = 1;
+  if (true) {
+    count += 1;
+  }
+  ```
+
+- 请注意！ `let` 和 `const` 都是块级作用域。
+
+  ```javascript
+  // const 和 let 都只在定义他们的块中存在
+  if (true) {
+    const a = 1;
+    let b = 2;
+  }
+  console.log(a); //ReferenceError
+  console.log(b); // ReferenceError
+  ```
+
+  ​
+
+## 字符串
+
+  - [2.1](#string-quote-style) 静态字符串一律使用单引号，不使用双引号。动态字符串使用反引号，或者换行字符串。
 
     ```javascript
     // bad
     const staticString = "foobar";
+
+    // bad
+    const staticString = `foobar`;
 
     // good
     const staticString = 'foobar';
     const dynamicString = `foo${staticString}bar`;
     ```
 
+  - [2.2]() 拼接字符串的时候，使用模板字符串 `template strings` 
+
+    ```javascript
+    // bad
+    function sayHi(name) {
+      return 'How are you, ' + name + '?';
+    }
+
+    // bad
+    function sayHi(name) {
+      return ['How are you', ', name, '?'].join();
+    }
+    ```
+
 **[⬆ back to top](#table-of-contents)**
 
-## 解构赋值 <a id="Destructuring"></a>
+## 解构赋值
 
   - [3.1](#destructuring-array) 使用数组成员对变量赋值时，优先使用解构赋值。
 
@@ -111,9 +219,114 @@
 
 **[⬆ back to top](#table-of-contents)**
 
-## 对象 <a id="Objects"></a>
+## 对象（Objects） 
 
-  - [4.1](#object-define-comma) 单行定义的对象，最后一个成员不以逗号结尾。多行定义的对象，最后一个成员以逗号结尾。
+  - 每当创建一个新对象时，使用对象字面量的方法。
+
+    ```javascript
+    // bad
+    const item = new Object();
+
+    // good
+    const item = {};
+    ```
+
+  - 当新创建的对象需要带有**动态属性名**时，使用**计算属性名**。
+
+    > 为什么呢？因为这样能在一处定义对象的所有属性，清晰明了。
+
+    ```javascript
+    function getKey(k) {
+      return `a key name ${k}`;
+    }
+
+    // bad
+    const obj = {
+      id: 5,
+      name: 'Shang Hai',
+    };
+    obj[getKey('enabled')] = true;
+
+    // good
+    const obj = {
+      id: 5,
+      name: 'Shang Hai',
+      [getKey('enabled')]: true,
+    };
+    ```
+
+  - 在书写对象的方法时，使用简洁写法。
+
+    ```javascript
+    // bad
+    const vscode = {
+      value: 1,
+      
+      addValue: function (value) {
+        return vscode.value + value;
+      },
+    };
+
+    // good
+    const vscode = {
+      value: 1,
+      
+      addValue(value) {
+        return vscode.value + value;
+      },
+    };
+    ```
+
+  - 在书写对象的属性时，也使用简洁写法。
+
+    > 为什么呢？因为这样写起来更简洁，而且描述得更清楚。
+
+    ```javascript
+    const walker = 'mRc & pftom';
+
+    // bad
+    const obj = {
+      walker: walker,
+    };
+
+    // good
+    const obj = {
+      walker,
+    };
+    ```
+
+  - 对象有多个属性时，把能用**简洁写法**的属性都放在对象申明的开头。
+
+    > 为什么呢？因为这样能很容易知道哪些属性在使用**简洁写法**。
+
+    ```javascript
+    const pftom = 'A very cool guy.';
+    const mRc = 'A smart guy.';
+
+    // bad
+    const obj = {
+      episodeOne: 1,
+      twoJediWalkIntoACantina: 2,
+      lukeSkywalker,
+      episodeThree: 3,
+      mayTheFourth: 4,
+      anakinSkywalker,
+    };
+
+    // good
+    const obj = {
+      lukeSkywalker,
+      anakinSkywalker,
+      episodeOne: 1,
+      twoJediWalkIntoACantina: 2,
+      episodeThree: 3,
+      mayTheFourth: 4,
+    };
+    ```
+
+    ​
+
+  - 单行定义的对象，最后一个成员不以逗号结尾。多行定义的对象，最后一个成员以逗号结尾。
 
     ```javascript
     // bad
@@ -131,7 +344,7 @@
     };
     ```
 
-  - [4.2](#object-staticable) 对象要静态化，一旦定义，就不得改变，如果要改变，使用`Spread Syntax '...'`来返回一个新对象。
+  - 对象要静态化，一旦定义，就不得改变，如果要改变，使用`Spread Syntax '...'`来返回一个新对象。
 
     ```javascript
     // bad
@@ -213,8 +426,8 @@
     // good
     const items = [1, 2, 3, 4];
     const copyItems = [ ...items ];
-    ``` 
-  
+    ```
+
   - [5.2](#array-change) 使用 `Array.from` 将类数组对象转换为数组。
 
     ```javascript
@@ -312,7 +525,7 @@
 ## 模块 <a id="Modules"></a>
 
   - [8.1](#module-import) 使用 `import` 代替 `require` 。
-  
+
     ```javascript
     // bad
     const moduleA = require('moduleA');
@@ -386,7 +599,7 @@
     ```
 
   - [8.5](#module-function) 如果默认输出的是函数，那么函数名首字母需要小写。
-  
+
     ```javascript
     // bad
     function MyFunc () {
@@ -417,7 +630,7 @@
     const MyObj = {
       ...
     };
-    
+
     export default MyObj;
     ```
 
