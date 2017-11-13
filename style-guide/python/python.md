@@ -754,3 +754,41 @@ def chase():
     dog.chase(cat)
     cat.chase(mouse)
 ```
+
+# Powerformer 推荐风格
+
+## 续行
+
+当出现很长的代码行时，首先考虑能否拆解成多个语句。如果不能，可以在很长的表达式两边加括号进行换行。不要使用 `\` 来续行，因为这较容易引入错误，并且不够美观。
+
+### 字符串续行
+
+```python
+# bad
+long_sentence = "Lorem ipsum dolor sit amet consectetur adipisicing \
+elit. Veritatis blanditiis ex iure unde necessitatibus sequi qui \
+iusto fuga illum facilis!"
+
+# good
+long_sentence = (
+    "Lorem ipsum dolor sit amet consectetur adipisicing elit. "
+    "Veritatis blanditiis ex iure unde necessitatibus sequi "
+    "qui iusto fuga illum facilis!"
+)
+```
+
+### `import` 续行
+
+```python
+# bad
+from .serializers import CatSerializer, DogSerializer \
+FrogSerializer, LionSerializer
+
+# good
+from .serializers import (
+    CatSerializer,
+    DogSerializer,
+    FrogSerializer,
+    LionSerializer
+)
+```
