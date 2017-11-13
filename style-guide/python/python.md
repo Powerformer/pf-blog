@@ -590,3 +590,167 @@ def process(response):
         bodytext = utils.lx_to_text(divs[0])
         yield Item(bodytext)
 ```
+
+## 重视可读性
+
+可读性是 Python 语言的灵魂。
+
+```python
+""" Write out the tests for a factorial function. """
+# bad
+def factorial(n):
+    """ Return the factorial of n, an exact integer >= 0.
+
+    >>> [factorial(n) for n in range(6)]
+    [1, 1, 2, 6, 24, 120]
+
+    >>> factorial(30)
+    265252859812191058636308480000000L
+
+    >>> factorial(-1)
+    Traceback (most recent call last):
+    ...
+    ValueError: n must be >= 0 """
+    pass
+
+if __name__ == '__main__' and '--test' in sys.argv:
+    import doctest
+    doctest.testmod()
+
+# good
+import unittest
+
+def factorial(n):
+    pass
+
+class FactorialTests(unittest.TestCase):
+    def test_ints(self):
+        self.assertEqual(
+            [factorial(n) for n in range(6)], [1, 1, 2, 6, 24, 120])
+
+    def test_long(self):
+        self.assertEqual(
+            factorial(30), 265252859812191058636308480000000L)
+
+    def test_negative_error(self):
+        with self.assertRaises(ValueError):
+            factorial(-1)
+
+if __name__ == '__main__' and '--test' in sys.argv:
+    unittest.main()
+```
+
+## 特例不应打破规则
+
+即便特例有时会非常实用，但是也不应该破坏既定的规则。
+
+```python
+"""
+Write a function that returns another functions. Also, test floating point.
+"""
+# bad
+def make_counter():
+    i = 0
+    def count():
+        """ Increments a count and returns it. """
+        i += 1
+        return i
+    return count
+
+count = make_counter()
+assert hasattr(count, '__name__') # No anonymous functions!
+assert hasattr(count, '__doc__')
+
+assert float('0.20000000000000007') == 1.1 - 0.9 # (this is platform dependent)
+assert 0.2 != 1.1 - 0.9 # Not special enough to break the rules of floating pt.
+assert float(repr(1.1 - 0.9)) == 1.1 - 0.9
+
+# good
+def make_adder(addend):
+return lambda i: i + addend # But lambdas, once in a while, are practical.
+
+assert str(1.1 - 0.9) == '0.2' # as may be rounding off floating point errors
+assert round(0.2, 15) == round(1.1 - 0.9, 15)
+```
+
+## 处理好每个错误
+
+精确地捕获并处理所有异常，除非你有明确的理由不这样做。
+
+```python
+""" Import whatever json library is available. """
+try:
+    import json
+except ImportError:
+    try:
+        import simplejson as json
+    except:
+        print 'Unable to find json module!'
+        raise
+```
+
+## 消除可能的歧义
+
+面对多种可能的情况时，不要（让别人）去猜测，应当消除各种可能的歧义。
+
+```python
+""" Store an HTTP request in the database. """
+def process(response):
+    db.store(url, response.body)
+
+def process(response):
+    charset = detect_charset(response)
+    db.store(url, response.body.decode(charset))
+```
+
+## 解决问题的最好方法应当只有一种
+
+也许并不容易一眼看出，但是在不断的思考和重构中会逐步接近那种最好的方法。除非你是龟叔（Guido van Rossum，Python 之父）。
+
+## 做事之前多加考虑
+
+做也许好过不做，但不假思索就动手还不如不做。
+
+```python
+def obsolete_func():
+    raise PendingDeprecationWarning
+
+def deprecated_func():
+    raise DeprecationWarning
+```
+
+不假思索地实现功能，终究会使你的项目“动荡不安”，陷入 `Deprecation` 地狱。
+
+## 让实现方法易于解释
+
+很难解释的实现方法一定是个糟糕的方法，容易解释的实现方法可能是个好方法。
+
+```python
+def hard():
+    import xml.dom.minidom
+    document = xml.dom.minidom.parseString(
+        ’’’<menagerie><cat>Fluffers</cat><cat>Cisco</cat></menagerie>’’’ )
+    menagerie = document.childNodes[0]
+    for node in menagerie.childNodes:
+        if node.childNodes[0].nodeValue== ’Cisco’ and node.tagName == ’cat’:
+            return node
+
+def easy(maybe):
+    import lxml
+    menagerie = lxml.etree.fromstring(
+        ’’’<menagerie><cat>Fluffers</cat><cat>Cisco</cat></menagerie>’’’ )
+    for pet in menagerie.find(’./cat’):
+    if pet.text == ’Cisco’:
+        return pet
+```
+
+## 拥抱命名空间
+
+```python
+def chase():
+    import menagerie.models.cat as cat
+    import menagerie.models.dog as dog
+
+    dog.chase(cat)
+    cat.chase(mouse)
+```
