@@ -324,6 +324,45 @@
     };
     ```
 
+- 只给不合法的标识符加上单引号
+
+  > 为什么呢？因为主观上我们认为这样更具可读性，而且能增加语法高亮的程度，同时呢，Js引擎也更容易对其进行优化。
+
+  ```javascript
+  // bad
+  const bad = {
+    'foo': 3,
+    'bar': 4,
+    'data-blash': 5,
+  };
+
+  // good
+  const good = {
+    foo: 3,
+    bar: 4,
+    'data-blash': 5,
+  };
+  ```
+
+  - 不要在一个对象上直接调用  `Object.prototype` 上的方法，例如： `hasOwnProperty` ，`propertyIsEnumerable`  和 `isPrototypeOf` 。
+
+    > 为什么呢？因为这些方法可能会被对象本身的属性覆盖掉，例如：`{ hasOwnProperty: false }` ；亦或，对象是一个 `null` 对象（`Object.create(null)`）- `null`对象是没有这些方法的
+
+    ```javascript
+    // bad
+    console.log(object.hasOwnProperty(key));
+
+    // good
+    console.log(Object.prototype.hasOwnProperty.call(object, key));
+
+    // best
+    const has = Object.prototype.hasOwnProperty; // 调用一次之后，会在模块作用域中缓存
+    /* or */
+    import has from 'has';
+    // ...
+    console.log(has.call(object, key));
+    ```
+
     ​
 
   - 单行定义的对象，最后一个成员不以逗号结尾。多行定义的对象，最后一个成员以逗号结尾。
