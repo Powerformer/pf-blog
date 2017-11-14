@@ -792,3 +792,42 @@ from .serializers import (
     LionSerializer
 )
 ```
+
+## 再谈 `import`
+
+### 利用命名空间
+
+在其他主流语言中（例如 Java ）， 会在 `import` 时将库中的所有代码拷贝进当前的文件中。这样做有两个坏处：
+
+- 容易产生命名冲突，造成意想不到的覆盖。
+
+- 降低了代码的可读性（这个类是从其他库中导入的，还是在本代码文件中定义的？）
+
+因此，我们建议在 Python 语言中优先使用 `import module` 的语法，因为这样可以充分发挥 Python 的*命名空间*这一语法优点，也暗合了 PEP20 中的最后一句话。
+
+```python
+# very bad
+from module import *
+x = sqrt(4)
+
+# better
+from module import sqrt
+x = sqrt(4)
+
+# best
+import module
+x = module.sqrt(4)
+```
+
+### 遵循业界公认的别名
+
+有些被业界广泛使用的包已经有了自己广受认可的 `as` 别名，例如：
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import tensorflow as tf
+```
+
+在这种情况下，遵循这些规范能让自己的代码更好地被业界所接受。
