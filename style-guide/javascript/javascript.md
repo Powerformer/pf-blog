@@ -344,114 +344,157 @@
   };
   ```
 
-  - 不要在一个对象上直接调用  `Object.prototype` 上的方法，例如： `hasOwnProperty` ，`propertyIsEnumerable`  和 `isPrototypeOf` 。
+- 不要在一个对象上直接调用  `Object.prototype` 上的方法，例如： `hasOwnProperty` ，`propertyIsEnumerable`  和 `isPrototypeOf` 。
 
-    > 为什么呢？因为这些方法可能会被对象本身的属性覆盖掉，例如：`{ hasOwnProperty: false }` ；亦或，对象是一个 `null` 对象（`Object.create(null)`）- `null`对象是没有这些方法的
+  > 为什么呢？因为这些方法可能会被对象本身的属性覆盖掉，例如：`{ hasOwnProperty: false }` ；亦或，对象是一个 `null` 对象（`Object.create(null)`）- `null`对象是没有这些方法的
 
-    ```javascript
-    // bad
-    console.log(object.hasOwnProperty(key));
+  ```javascript
+  // bad
+  console.log(object.hasOwnProperty(key));
 
-    // good
-    console.log(Object.prototype.hasOwnProperty.call(object, key));
+  // good
+  console.log(Object.prototype.hasOwnProperty.call(object, key));
 
-    // best
-    const has = Object.prototype.hasOwnProperty; // 调用一次之后，会在模块作用域中缓存
-    /* or */
-    import has from 'has';
-    // ...
-    console.log(has.call(object, key));
-    ```
+  // best
+  const has = Object.prototype.hasOwnProperty; // 调用一次之后，会在模块作用域中缓存
+  /* or */
+  import has from 'has';
+  // ...
+  console.log(has.call(object, key));
+  ```
 
-    ​
+  ​
 
-  - 单行定义的对象，最后一个成员不以逗号结尾。多行定义的对象，最后一个成员以逗号结尾。
+- 在对一个对象进行浅复制的时候，最好用（ `…`） `spread syntax `  语法，而不是使用  `Object.assign` ；在获取一个新对象时，需要忽略其有些属性，使用 `rest operator`。
 
-    ```javascript
-    // bad
-    const objComma1 = { first: value1, second: value2, };
-    const objComma2 = {
-      first: value1,
-      second: value2
-    };
+  ```javascript
+  // var bad
+  const original = { a: 1, b: 2 };
+  const copy = Object.assign(original, { c: 3 }); // 这个改变了 original对象 (⊙_⊙?)
+  delete copy.a // 这个也也改变了原对象
 
-    // good
-    const objComma1 = { first: value1, second: value2 };
-    const objComma2 = {
-      first: value1,
-      second: value2,
-    };
-    ```
+  // bad
+  const original = { a: 1, b: 2 };
+  const copy = Object.assign({}, original, { c: 3 }); // copy => { a: 1, b: 2, c: 3 }
 
-  - 对象要静态化，一旦定义，就不得改变，如果要改变，使用`Spread Syntax '...'`来返回一个新对象。
+  // good
+  const original = { a: 1, b: 2 };
+  const copy = { ...original, c: 3 }; // copy => { a: 1, b: 2, c: 3 };
 
-    ```javascript
-    // bad
-    const staticObj = {};
-    staticObj.first = 3;
+  const { a, ...noA } = copy; // noA => { b: 2, c: 3 }
+  ```
 
-    // also bad
-    const staticObj = { first: 2 };
-    staticObj.first = 3;
+  ​
 
-    // good
-    const staticObj = { first: 2 };
-    const nextStaticObj = { ...staticObj, first: 3};
+- 单行定义的对象，最后一个成员不以逗号结尾。多行定义的对象，最后一个成员以逗号结尾。
 
-    // also good
-    const staticObj = { first: 2 };
-    const nextStaticObj = { ...staticObj, first: 3};
-    ```
+  ```javascript
+  // bad
+  const objComma1 = { first: value1, second: value2, };
+  const objComma2 = {
+    first: value1,
+    second: value2
+  };
 
-  - [4.3](#object-prop-expression) 如果对象的属性名是动态的，使用属性表达式来定义。
+  // good
+  const objComma1 = { first: value1, second: value2 };
+  const objComma2 = {
+    first: value1,
+    second: value2,
+  };
+  ```
 
-    ```javascript
-    function getKey(condition) {
+- 对象要静态化，一旦定义，就不得改变，如果要改变，使用`Spread Syntax '...'`来返回一个新对象。
+
+  ```javascript
+  // bad
+  const staticObj = {};
+  staticObj.first = 3;
+
+  // also bad
+  const staticObj = { first: 2 };
+  staticObj.first = 3;
+
+  // good
+  const staticObj = { first: 2 };
+  const nextStaticObj = { ...staticObj, first: 3};
+
+  // also good
+  const staticObj = { first: 2 };
+  const nextStaticObj = { ...staticObj, first: 3};
+  ```
+
+- [4.3](#object-prop-expression) 如果对象的属性名是动态的，使用属性表达式来定义。
+
+  ```javascript
+  function getKey(condition) {
+    ...
+    return result;
+  }
+
+  const propExpObj = {
+    first: 'pftom',
+    [getKey('enabled')]: true,
+  };
+  ```
+
+- [4.4](#object-simplify-expression) 对象的属性和方法都要采用简洁表达式。
+
+  ```javascript
+  // bad
+  const simpExpObj1 = {
+    first: first,
+  };
+
+  // also bad
+  const simpExpObj2 = {
+    addFirst: function (value) {
       ...
       return result;
     }
+  }
 
-    const propExpObj = {
-      first: 'pftom',
-      [getKey('enabled')]: true,
-    };
-    ```
+  // good
+  const simpExpObj1 = {
+    first,
+  };
 
-  - [4.4](#object-simplify-expression) 对象的属性和方法都要采用简洁表达式。
-
-    ```javascript
-    // bad
-    const simpExpObj1 = {
-      first: first,
-    };
-
-    // also bad
-    const simpExpObj2 = {
-      addFirst: function (value) {
-        ...
-        return result;
-      }
-    }
-
-    // good
-    const simpExpObj1 = {
-      first,
-    };
-
-    // also good
-    const simpExpObj2 = {
-      addFirst(value) {
-        ...
-        return result;
-      },
-    };
-    ```
+  // also good
+  const simpExpObj2 = {
+    addFirst(value) {
+      ...
+      return result;
+    },
+  };
+  ```
 
 **[⬆ back to top](#table-of-contents)**
 
-## 数组 <a id="Arrays"></a>
+## 数组 
 
-  - [5.1](#array-copy) 拷贝数组使用 `Spread Syntax '...'` 。
+  - 使用对象字面量创建数组。
+
+    ```javascript
+    // bad
+    const items = new Array();
+
+    // good
+    const items = [];
+    ```
+
+  - 给数组添加新元素时，使用  `Array#push` 来添加，而不要直接以直接赋值的形式添加。
+
+    ```javascript
+    const someStack = [];
+
+    // bad
+    someStack[someStack.length] = 'abababab';
+
+    // good
+    someStack.push('abababab');
+    ```
+
+  - 拷贝数组使用 `Spread Syntax '...'` 。
 
     ```javascript
     // bad
@@ -467,16 +510,31 @@
     const copyItems = [ ...items ];
     ```
 
-  - [5.2](#array-change) 使用 `Array.from` 将类数组对象转换为数组。
+  - 在对可遍历结构进行映射时，使用 `Array.from` 而不是 `...` ，因为这能避免创建一个中间数组。
+
+    ```javascript
+    // bad 
+    const baz = [ ...foo ].map(bar); // [] => 即为中间数组。
+
+    // good
+    const baz = Array.from(foo, bar);
+    ```
+
+    ​
+
+  - 使用 `Array.from` 或者 spreads `...` 将类数组对象转换为数组，
 
     ```javascript
     const analogyArrObj = document.querySelectorAll('.nodes');
+
+    // good
     const arr = Array.from(analogyArrObj)
+
+    // best
+    const arr = [ ...foo ];
     ```
 
-**[⬆ back to top](#table-of-contents)**
-
-## 函数 <a id="Functions"></a>
+## 函数 
 
   - [6.1](#function-arrow) 能使用箭头函数尽量使用箭头函数。简洁而且可以绑定`this` 。
 
