@@ -168,7 +168,7 @@
 
 ## 解构赋值
 
-  - [3.1](#destructuring-array) 使用数组成员对变量赋值时，优先使用解构赋值。
+  - 使用数组成员对变量赋值时，优先使用解构赋值。
 
     ```javascript
     const arr = [1, 2, 3, 4];
@@ -181,7 +181,7 @@
     const [desArrFirst, desArrSecond] = arr;
     ```
 
-  - [3.2](#destructuring-func-params) 函数参数如果是对象成员，优先使用解构赋值
+  - 函数参数如果是对象成员，优先使用解构赋值
 
     ```javascript
     // bad
@@ -201,7 +201,7 @@
     }
     ```
 
-  - [3.3](#destructuring-func-return) 如果函数返回多个值，优先使用对象的解构赋值，而不是数组的解构赋值。这样便于以后添加返回值，以及更改返回值的顺序。
+  - 如果函数返回多个值，优先使用对象的解构赋值，而不是数组的解构赋值。这样便于以后添加返回值，以及更改返回值的顺序。
 
     ```javascript
     // bad
@@ -254,6 +254,8 @@
       [getKey('enabled')]: true,
     };
     ```
+
+    ​
 
   - 在书写对象的方法时，使用简洁写法。
 
@@ -520,7 +522,87 @@
     const baz = Array.from(foo, bar);
     ```
 
-    ​
+  - 在数组方法里的回调函数中使用 `return` 语句；如果回调函数体只由一条返回一个没有副作用的表达式构成，那么可以忽略 `return` 语句。
+
+    ```javascript
+    // good
+    [1, 2, 3].map((x) => {
+      const y = x + 1;
+      return x * y;
+    });
+
+    // good
+    [1, 2, 3].map(x => x + 1);
+
+    // bad - 因为没有 `return` 语句，`memo`在第一次迭代之后就变成 `undefined`
+    [[0, 1], [2, 3], [4, 5]].reduce((meno, item, index) => {
+      const flatten = memo.concat(item);
+      memo[index] = flatten;
+    });
+
+    // good
+    [[0, 1], [2, 3], [4, 5]].reduce((memo, item, index) => {
+      const flatten = memo.concat(item);
+      memp[index] = flatten;
+      return flatten;
+    });
+
+    // bad
+    inbox.filter((msg) => {
+      const { subject, author } = msg;
+      if (subject === 'Mockingbird') {
+        return author === 'Harper Lee';
+      } else {
+        return false;
+      }
+    });
+
+    // good
+    inbox.filter((msg) => {
+      const { subject, author } = msg;
+      if (subject === 'Mockingbird') {
+        return author === 'Harper Lee';
+      }
+      
+      return false;
+    })
+    ```
+
+  - 如果数组有很多行，那么在数组开始括号 `[ ` 之后和结束括号 `]` 之前都要换行。
+
+    ```javascript
+    // bad
+    const arr = [
+      [0, 1], [2, 3], [4, 5],
+    ];
+
+    const objectInArray = [{
+      id: 1,
+    }, {
+      id: 2,
+    }];
+
+    const numberInArray = [
+      1, 2
+    ];
+
+    // good
+    const arr = [[0, 1], [2, 3], [4, 5]];
+
+    const objectInArray = [
+      {
+        id: 1,
+      },
+      {
+        id: 2,
+      },
+    ];
+
+    const numberInArray = [
+      1,
+      2,
+    ];
+    ```
 
   - 使用 `Array.from` 或者 spreads `...` 将类数组对象转换为数组，
 
@@ -587,11 +669,9 @@
     }
     ```
 
-**[⬆ back to top](#table-of-contents)**
+## 类 
 
-## 类 <a id="Classes"></a>
-
-  - [7.1](#class-prototype) 在需要使用  `Prototype` 的操作时，都用 `Class` 来取代。
+  - 在需要使用  `Prototype` 的操作时，都用 `Class` 来取代。
 
     ```javascript
     // bad
@@ -617,9 +697,7 @@
     }
     ```
 
-**[⬆ back to top](#table-of-contents)**
-
-## 模块 <a id="Modules"></a>
+## 模块 
 
   - [8.1](#module-import) 使用 `import` 代替 `require` 。
 
