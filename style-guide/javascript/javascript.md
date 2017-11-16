@@ -424,7 +424,7 @@
   const nextStaticObj = { ...staticObj, first: 3};
   ```
 
-- [4.3](#object-prop-expression) 如果对象的属性名是动态的，使用属性表达式来定义。
+- 如果对象的属性名是动态的，使用属性表达式来定义。
 
   ```javascript
   function getKey(condition) {
