@@ -28,18 +28,6 @@
     }
     ```
 
-  - [1.2](#code-style-limit-row) 每行代码不超过`119`个字符。
-
-    ```javascript
-    // bad
-    const myBadDream = "Lorem ipsum dolor sit amet consectetur adipisicing elit. Officiis dicta maxime at ratione assumenda, quos, asperiores odit deleniti quia quidem atque quo tempore error a nihil impedit excepturi aliquid nemo?";
-
-    // good
-    const myGoodDream = "Lorem ipsum dolor sit amet consectetur adipisicing elit. \
-                Officiis dicta maxime at ratione assumenda, quos, asperiores odit \
-                deleniti quia quidem atque quo tempore error a nihil impedit      \
-                excepturi aliquid nemo?";
-    ```
 
 
 
@@ -82,6 +70,8 @@
   console.log(foo[0], bar[0]); // => 9, 9
   foo === bar; // => true
   ```
+
+
 
 
 ## 引用（Reference）
@@ -136,7 +126,7 @@
 
 ## 字符串
 
-  - [2.1](#string-quote-style) 静态字符串一律使用单引号，不使用双引号。动态字符串使用反引号，或者换行字符串。
+  - 静态字符串一律使用单引号，不使用双引号。动态字符串使用反引号，或者换行字符串。
 
     ```javascript
     // bad
@@ -150,7 +140,7 @@
     const dynamicString = `foo${staticString}bar`;
     ```
 
-  - [2.2]() 拼接字符串的时候，使用模板字符串 `template strings` 
+  - 拼接字符串的时候，使用模板字符串 `template strings` 
 
     ```javascript
     // bad
@@ -162,9 +152,54 @@
     function sayHi(name) {
       return ['How are you', ', name, '?'].join();
     }
+
+    // bad
+    function sayHi(name) {
+      return `How are you, ${ name }?`;
+    }
+
+    // good
+    function sayHi(name) {
+      return `How are you, ${name}?`;
+    }
     ```
 
-**[⬆ back to top](#table-of-contents)**
+
+
+- 当一行字符串超过100个字符时，不要使用字符串链接符将字符串分成多行。
+
+  ```javascript
+  // bad
+  const errMessage = 'This is a super long error that was thrown because \
+  of Batman. When you stop to think about how Batman had anything to do \
+  with this, you would get nowhere \
+  fast.';
+
+  // bad
+  const errMessage = 'This is a super long error that was thrown because ' +
+    'of Batman. When you stop to think about how Batman had anything to do ' +
+    'with this, you would get nowhere fast.';
+
+  // good
+  const errorMessage = 'This is a super long error that was thrown because of Batman. When you stop to think about how Batman had anything to do with this, you would get nowhere fast.';
+  ```
+
+
+
+- 绝不要对字符串使用 `eval()` ，因为这会带来很多的侵害。
+
+- 不在万不得已，不要使用转义字符 `\`。
+
+  ```javascript
+  // bad
+  const foo = '\'this\' \i\s \"quoted"';
+
+  // good
+  const foo = '\'this\' is "quoted"';
+  const foo = `my name is '${name}'`;
+  ```
+
+  ​
 
 ## 解构赋值
 
@@ -217,7 +252,7 @@
     const { left, right } = processInput(input);
     ```
 
-**[⬆ back to top](#table-of-contents)**
+
 
 ## 对象（Objects） 
 
@@ -616,9 +651,11 @@
     const arr = [ ...foo ];
     ```
 
+
+
 ## 函数 
 
-  - [6.1](#function-arrow) 能使用箭头函数尽量使用箭头函数。简洁而且可以绑定`this` 。
+  - 能使用箭头函数尽量使用箭头函数。简洁而且可以绑定`this` 。
 
     ```javascript
     // bad
@@ -668,6 +705,47 @@
       ...
     }
     ```
+
+
+
+
+- 使用命名表达式定义函数，而不要使用函数声明。
+
+  > 为什么呢？因为函数声明存在变量提升，这就意味着很容易在定义这个函数之前就能引用这个函数。这样的情况极大的损害了代码的可读性和可维护性。当你发现，在一个文件中，一个函数已经复杂到足以干扰理解剩下的代码，那么是时候将它作为一个单独的模块提取出来了！永远不要忘记要明确给函数表达式命名，尽管这可能会与已有的变量命名冲突。（这在现代浏览器或者使用了 `Babel` 编译器的情况下很常见；因为在出错时，我们能在 错误调用栈中通过名字定位到这个函数！
+
+  ```javascript
+  // bad
+  function foo() {
+    // ...
+  }
+
+  // bad
+  const foo = function () {
+    // ...
+  };
+
+  // good
+  // `longUniqueMoreDescriptiveLexicalFoo` 是为了与变量调用时的引用 
+  // `short` 进行区分，为了达到调用简便，但是出错提示调用栈明确显示具体函数
+  const short = function longUniqueMoreDescriptiveLexicalFoo() {
+    // ...
+  };
+  ```
+
+
+
+- 使用圆括号`()` 包含立即执行的函数表达式。
+
+  > 为什么呢？使用圆括号包裹立即执行的函数表达式（IIFE），这样能很明确的表达：这是一个单一单元。但是请注意，你可能永远不需要（IIFE），因为你总能将它写入一个单独的命名模块中来调用。
+
+  ```javascript
+  // IIFE
+  (function () {
+    console.log('Welcome to the Internet. Please follow me');
+  }());
+  ```
+
+  ​
 
 ## 类 
 
