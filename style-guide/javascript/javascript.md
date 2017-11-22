@@ -747,6 +747,144 @@
 
   ​
 
+- 在一个非函数代码块（`if` ，`while`， etc）里面不要申明一个函数，而应该把这个函数赋值给一个变量。尽管浏览器允许前者的做法，但是不同的浏览器对这种写法的理解不同，这样会造成不一致的结果。
+
+  ```javascript
+  // bad
+  if (currentUser) {
+    function test() {
+      console.log('Nope.');
+    }
+  }
+
+  // good
+  let test;
+  if (currentUser) {
+    test = () => {
+      console.log('Yup.');
+    };
+  }
+  ```
+
+- 不要给形参命名为 `arguments` 。这样会取代原来会在每个函数域里面提供的 `arguments` 对象。
+
+  ```javascript
+  // bad
+  function foo(name, options, arguments) {
+    // ...
+  }
+
+  // good
+  function foo(name, options, args) {
+    // ...
+  }
+  ```
+
+- 绝不要使用 `arguments` ，取而代之的是 `rest` 语法：`...` 。
+
+  > 为什么呢？因为 `...`  不仅明确指出了你需要展现出来的形参，而且其后面跟的剩余参数是一个真正的数组，而不是像 `arguments` 这样的类数组。
+
+  ```javascript
+  // bad
+  function concatenateAll() {
+    const args = Array.prototype.slice.call(arguments);
+    return args.join('');
+  }
+
+  // good
+  function concatenateAll(...args) {
+    return args.join('');
+  }
+  ```
+
+- 不要企图改变函数参数，而要使用默认参数语法。
+
+  ```javascript
+  // really bad
+  function handleThings(opts) {
+    // 不要这样做，因为这会改变参数
+    // 更有甚者，当 opts 是 false 的时候，opts会被赋值为一个对象
+    // 这可能会引入一些新的 bug
+    opts = opts || {};
+    // ...
+  }
+
+  // still bad
+  function handleThings(opts) {
+    if (opts === void 0) {
+      opts = {};
+    }
+    // ...
+  }
+
+  // good
+  function handleThings(opts = {}) {
+    // ...
+  }
+  ```
+
+- 避免让默认参数产生副作用。
+
+  > 为什么呢？他们让人很难理解。
+
+  ```javascript
+  var b = 1;
+  // bad
+  function count(a = b++) {
+    console.log(a);
+  }
+
+  count(); // 1
+  count(); // 2
+  count(3); //3
+  count(); //3
+  ```
+
+- 总是把默认参数放在参数列表最后。
+
+  ```javascript
+  // bad
+  function handleThings=(opts = {}, name) {
+    // ...
+  }
+
+  // good
+  function handleThings(name, opts = {}) {
+    // ...
+  }
+  ```
+
+  ​
+
+- 绝不要使用函数的构造函数的形式来创建一个新函数。
+
+  > 为什么呢？用这种方式创建一个新函数类似于使用 eval() 执行了一个字符串，这样会带来很多侵害。
+
+  ```javascript
+  // bad
+  var add = new Function('a', 'b', 'return a + b');
+
+  // still bad
+  var substract = Function('a', 'b', 'return a - b');
+  ```
+
+  ​
+
+- 在函数签名与括号之间加上空格。
+
+  > 为什么呢？这样有利于提高连贯性，当你加上或删除一个签名时，不需要同时也加上或删除一个空格。
+
+  ```javascript
+  // bad
+  const f = function(){};
+  const g = function (){};
+  const h = function() {};
+
+  // good
+  const x = function () {};
+  const u = function a() {};
+  ```
+
 ## 类 
 
   - 在需要使用  `Prototype` 的操作时，都用 `Class` 来取代。
