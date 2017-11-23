@@ -4,6 +4,8 @@
 
 > **注意**: 一般的变量命名会以涵盖标题为主，涉及四个值得变量命名会使用`top, right, bottom, left`, 涉及少于四个或者大于四个的变量命名会使用`first, second ...`。
 
+> 这份 `Style Guide` 绝大部分是对 Airbnb的 `Style Guide` 的引用的中文版。
+
 ## 代码风格(Code style)
 
   - [1.1](#code-style-indent) 语句块内每行代码缩进`2`个空格。
@@ -884,6 +886,217 @@
   const x = function () {};
   const u = function a() {};
   ```
+
+
+
+- 不要让参数发生突变
+
+  > 为什么呢？让作为参数传进来的对象发生突变，会函数的源调用者造成意想不到的副作用。
+
+  ```javascript
+  // bad
+  function f1(obj) {
+    obj.key = 1;
+  }
+
+  // good
+  function f2(obj) {
+    const key = Object.prototype.hasOwnProperty.call(obj, 'key') ? obj.key : 1;
+  }
+  ```
+
+
+
+- 不要给参数重新赋值。
+
+  > 为什么呢？给参数重新赋值能可能导致意想不到的行为，尤其是对 `argument` 操作的时候。而且这样还会造成性能问题，尤其在 V8 上。
+
+  ```javascript
+  // bad
+  function f1(a) {
+    a = 1;
+    // ...
+  }
+
+  function f2(a) {
+    if (!a) { a = 1; }
+    // ...
+  }
+
+  // good
+  function f3(a) {
+    const b = a || 1;
+    // ...
+  }
+
+  function f4(a = 1) {
+    // ...
+  }
+  ```
+
+  ​
+
+
+- 在调用 `variadic` 函数时，最好使用 `...` 。
+
+  > 为什么呢？这样让代码更干净，而且你都不需要提供上下文 `context` ，同时呢，组合使用 `new` 和 `apply` 不是很容易。
+
+  ```javascript
+  // bad
+  const x = [1, 2, 3, 4, 5];
+  console.log.apply(console, x);
+
+  // good
+  const x = [1, 2, 3, 4, 5];
+  console.log(...x);
+
+  // bad
+  new (Function.prototype.bind.apply(Date, [null, 2016, 8, 6]));
+
+  // good
+  new Date(...[2016, 8, 5]);
+  ```
+
+  ​
+
+
+- 多行函数形参，或者多行实参时，每个参数独占一行，尾行加上逗号。
+
+  > 为什么呢？更好的可读性，尾逗号是为了以后添加参数更加容易。
+
+  ```javascript
+  // bad
+  function foo(bar,
+               baz,
+                quux) {
+    // ...
+  }
+
+  // good
+  function foo(
+    bar,
+    baz,
+    quux,
+    ) {
+      // ...
+  }
+
+  // bad
+  console.log(foo,
+              bar,
+              baz);
+
+  // good
+  console.log(
+    foo,
+    bar,
+    baz,
+  );
+  ```
+
+  ​
+
+## 箭头函数
+
+- 当你必须得使用匿名函数的时候（当作为一个行内回调函数传入时），用箭头函数来代替。
+
+  > 为什么呢? 箭头函数内部保留了函数上下文 `this` ，这通常是你需要的，而且也是更简洁的语法。
+
+  > 为什么不这样呢？因为如果你有一个相当复杂的函数时，是时候将这些逻辑移到一个单独的命名函数表达式中呢。
+
+  ```javascript
+  // bad
+  [1, 2, 3].map(function (x) {
+    const y = x + 1;
+    return x * y;
+  });
+
+  // good
+  [1, 2, 3].map((x) => {
+    const y = x + 1;
+    return x * y;
+  });
+  ```
+
+  ​
+
+
+- 如果函数体由一个没有副作用，只返回表达式的单条语句构成，那么请忽略括号（`{}` ），使用隐式返回。相反，则需要使用括号以及 `return` 语句块。
+
+  > 为什么呢？这是一种语法糖。当多个函数链式调用的时候，这提高了可读性。
+
+  ```javascript
+  // bad
+  ['get', 'post', 'put'].map(httpMethod => Object.prototype.hasOwnProperty.call(
+    httpMagicObjectWithAVeryLongName,
+    httpMethod,
+  ));
+
+  // good
+  ['get', 'post', 'put'].map(httpMethod => (
+    Object.prototype.hasOwnProperty.call(
+  	httpMagicObjectWithAVeryLongName,
+      httpMethod,
+    )
+  ));
+  ```
+
+  ​
+
+
+- 如果你的函数只有单一形参，而且函数体没有使用括号（`{}`），那么，请忽略圆括号。如果不是这种情况，那么，请一直使用圆括号包裹形参，因为这会带来可读性和一致性。请注意：总是使用圆括号也是可以接受的。
+
+  > 为什么呢？更少的视觉可见块。
+
+  ```javascript
+  // bad
+  [1, 2, 3].map((x) => x * x);
+
+  // good
+  [1, 2, 3].map(x => x * x);
+
+  // good
+  [1, 2, 3].map(number => (
+   `A long string with the ${number}. It’s so long that we don’t want it to take up space on the .map line!`
+  ));
+
+  // bad
+  [1, 2, 3].map(x => {
+    const y = x + 1;
+    return x * y;
+  });
+
+  // good
+  [1, 2, 3].map((x) => {
+    const y = x + 1;
+    return x * y;
+  });
+  ```
+
+  ​
+
+
+
+- 避免把箭头函数 `=>` 和比较操作符 `<=` 和 `>=` 弄混。
+
+  ```javascript
+  // bad
+  const itemHeight = item => item.height > 256 ? item.largeSize : item.smallSize;
+
+  // bad
+  const itemHeight = (item) => item.height > 256 ? item.largeSize : item.smallSize;
+
+  // good
+  const itemHeight = item => (item.height > 256 ? item.largeSize : item.smallSize);
+
+  // best
+  const itemHeight = (item) => {
+    const { height, largeSize, smallSize } = item;
+    return height > 256 ? largeSize : smallSize;
+  };
+  ```
+
+  ​
 
 ## 类 
 
