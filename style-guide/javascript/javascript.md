@@ -1027,6 +1027,54 @@
 
   ```javascript
   // bad
+  [1, 2, 3].map(number => {
+    const nextNumber = number + 1;
+    return `A string containing the ${nextNumber}.`;
+  });
+
+  // good
+  [1, 2, 3].map((number) => {
+    const nextNumber = number + 1;
+    return `A string containing the ${nextNumber}.`;
+  });
+
+  // good
+  [1, 2, 3].map(number => `A string containing the ${nextNumber}.`);
+
+  // good
+  [1, 2, 3].map((number, index) => ({
+    [index]: number,
+  }));
+
+  // bad 
+  // No implicit return with side effects
+  function foo(callback) {
+    const val = callback();
+    if (val === true) {
+      // Do something if callback returns true
+    }
+  }
+
+  let bool = false;
+
+  // bad
+  foo(() => bool = true);
+
+  // good
+  foo(() => {
+    bool = true;
+  });
+  ```
+
+  ​
+
+
+- 如果表达式太长以至于扩展到多行，把它用圆括号括起来，这样能带来更好的可读性。
+
+  > 为什么呢？这样很清楚的展示出了函数在哪里开始，在哪里结束。
+
+  ```javascript
+  // bad
   ['get', 'post', 'put'].map(httpMethod => Object.prototype.hasOwnProperty.call(
     httpMagicObjectWithAVeryLongName,
     httpMethod,
@@ -1042,7 +1090,6 @@
   ```
 
   ​
-
 
 - 如果你的函数只有单一形参，而且函数体没有使用括号（`{}`），那么，请忽略圆括号。如果不是这种情况，那么，请一直使用圆括号包裹形参，因为这会带来可读性和一致性。请注意：总是使用圆括号也是可以接受的。
 
@@ -1098,9 +1145,11 @@
 
   ​
 
-## 类 
+## 类和构造函数 
 
   - 在需要使用  `Prototype` 的操作时，都用 `Class` 来取代。
+
+    > 为什么呢？`class` 语法更简洁，且更易理解。
 
     ```javascript
     // bad
@@ -1110,6 +1159,7 @@
 
     Queue.prototype.pop = function () {
       const value = this._queue[0];
+      this._queue.splice(0, 1);
       return value;
     }
 
@@ -1126,9 +1176,311 @@
     }
     ```
 
+
+
+- 在需要继承时，使用 `extend` 。
+
+  > 为什么呢？这是一种内建的原型继承功能，而且不会破坏 [instanceof](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof)
+
+  ```javascript
+  // bad
+  const inherits = require('inherits');
+  function PeekableQueue(contents) {
+    Queue.apply(this, contents);
+  }
+  inherits(PeekableQueue, Queue);
+  PeekableQueue.prototype.peek = function () {
+    return this.queue[0];
+  };
+
+  // good
+  class PeekableQueue extends Queue {
+    peek() {
+      return this.queue[0];
+    }
+  }
+  ```
+
+  ​
+
+
+- 方法能返回 `this` 帮助进行链式调用。
+
+  ```javascript
+  // bad
+  function Jedi() {}
+  Jedi.prototype.jump = function () {
+    this.jumping = true;
+    return true;
+  };
+
+  Jedi.prototype.setHeight = function (height) {
+    this.height = height;
+  };
+
+  const luke = new Jedi();
+  // 必须得一个一个调用
+  luke.jump(); // => true
+  luke.setHeight(20); // => undefined
+
+  // good
+  class Jedi {
+    jump() {
+      this.jumping = true;
+      return this;
+    }
+    
+    setHeight(height) {
+      this.height = height;
+      return this;
+    }
+  }
+
+  const luke = new Jedi();
+  luke.jump()
+   .setHeight(20);
+  ```
+
+  ​
+
+
+- 手写一个 `toString()` 方法是比较好的，仅仅是为了确保这个方法能正确工作而且没有副作用。
+
+  ```javascript
+  class Jedi {
+    constructor(options = {}) {
+      this.name = options.name || 'no name';
+    }
+    
+    getName() {
+      return this.name;
+    }
+    
+    toString() {
+      return `Jedi - ${this.getName()}`;
+    }
+  }
+  ```
+
+  ​
+
+
+- 如果类没有明确指定 `constructor` 也会有一个默认的 `constructor` 。所以，一个空的，或者只是单纯代理父类的构造函数是不必要的。
+
+  ```javascript
+  // bad
+  class Jedi {
+    constructor() {}
+    
+    getName() {
+      return this.name;
+    }
+  }
+
+  // bad
+  class Rey extends Jedi {
+    constructor(...args) {
+      super(...args);
+    }
+  }
+
+  // good
+  class Rey extends Jedi {
+    constructor(...args) {
+      super(...args);
+      this.name = 'Rey';
+    }
+  }
+  ```
+
+  ​
+
+- 避免重复定义类的属性。
+
+  > 为什么呢？因为重复类的成员属性将会静默使用最后的-能重复本身就是一个bug。
+
+  ```javascript
+  // bad
+  class Foo {
+    bar() { return 1; }
+    bar() { return 2; }
+  }
+
+  // good
+  class Foo {
+    bar() { return 1; }
+  }
+
+  // good
+  class Foo {
+    bar() { return 2; }
+  }
+  ```
+
+  ​
+
 ## 模块 
 
-  - [8.1](#module-import) 使用 `import` 代替 `require` 。
+  - 相比使用非标准的模块系统，你应该总是使用像（`import` / `export` ) 这样的模块系统。而且你总能将其编译成你更喜欢的模块系统。
+
+    > 为什么呢？模块化是未来，让我们从现在开始就享受未来。
+
+    ```javascript
+    // bad
+    const PowerformerStyleGuide = require('./PowerformerStyleGuide');
+    module.exports = PowerformerStyleGuide.es6;
+
+    // ok
+    import PowerformerStyleGuide from './PowerformerStyleGuide';
+    export default PowerformerStyleGuide;
+
+    // best
+    import { es6 } from './PowerformerStyleGuide';
+    export default es6;
+    ```
+
+    ​
+
+  - 不要使用通配符导入。
+
+    > 为什么呢？这能确保你有唯一的，默认导出。(`export default`)
+
+    ```javascript
+    // bad
+    import * as PowerformerStyleGuide from './PowerformerStyleGuide';
+
+    // good
+    import PowerformerStyleGuide from './PowerformerStyleGuide';
+    ```
+
+    ​
+
+  - 不要在导入的同时直接导出。
+
+    > 为什么呢？尽管使用一行代码看起来比较简洁，但是有明确的 `import` 和 `export` 使得事物变得连贯。
+
+    ```javascript
+    // bad
+    // filename es6.js
+    export { es6 as default } from './PowerformerStyleGuide';
+
+    // good
+    // filename es6.js
+    import { es6 } from './PowerformerStyleGuide';
+    export default es6;
+    ```
+
+    ​
+
+  - 只从一个路径导出一次。
+
+    > 为什么呢？从相同路径导入多次会占多行，这会使得代码非常难以维护。
+
+    ```javascript
+    // bad
+    import foo from 'foo';
+    // ... some other imports ... //
+    import { named1, named2 } from 'foo';
+
+    // good
+    import foo, { named1, named2 } from 'foo';
+
+    // good
+    import foo, {
+      named1, 
+      named2,
+    } from 'foo';
+    ```
+
+    ​
+
+  - 不要导出可变的绑定。
+
+    > 为什么呢？可变的绑定一般是要避免的，只有在特殊情况下可能需要，所以只允许不变的引用能导出。
+
+    ```javascript
+    // bad
+    let foo = 3;
+    export { foo };
+
+    // good
+    const foo = 3;
+    export { foo };
+    ```
+
+    ​
+
+  - 如果一个模块只有单一导出，那么相比较 `export` ，使用 `export default ` 更好。
+
+    > 为什么呢？这样能鼓励尽可能多的文件只进行单一导出，这样能提高可读性和可维护性。
+
+    ```javascript
+    // bad
+    export function foo() {}
+
+    // good
+    export default function foo() {}
+    ```
+
+    ​
+
+  - 所有的 `import` 语句都在非 `import` 语句前面。
+
+    > 为什么呢？因为 `import` 存在提升，帮他们都放在文件头能避免无法预期的行为。
+
+    ```javascript
+    // bad
+    import foo from 'foo';
+    foo.init();
+
+    import bar from 'bar';
+
+    // good
+    import foo from 'foo';
+    import bar from 'bar';
+
+    foo.init();
+    ```
+
+    ​
+
+  - 多行导入需要换行显示，就像多行数组和对象字面量一样。
+
+    > 为什么呢？花括号应该要遵循这份编程风格指南中其他的每个花括号相同的缩进规则，末尾的逗号也一样。
+
+    ```javascript
+    // bad
+    import {longNameA, longNameB, longNameC, longNameD, longNameE} from 'path';
+
+    // good
+    import {
+      longNameA,
+      longNameB,
+      longNameC,
+      longNameD,
+      longNameE,
+    } from 'path'
+    ```
+
+    ​
+
+  - 不允许在模块导入语句中使用 `webpack loader` 的语法。
+
+    > 为什么呢？在导入语句中使用 `Webpack` 语法会把代码和模块打包工具搅在一起，在`webpack.config.js` 中使用 `loader` 语法更好。
+
+    ```javascript
+    // bad
+    import fooSass from 'css!sass!foo.scss';
+    import barCss from 'style!css!bar.css';
+
+    // good
+    import fooSass from 'foo.scss';
+    import barCss from 'bar.css';
+    ```
+
+    ​
+
+  - 使用 `import` 代替 `require` 。
 
     ```javascript
     // bad
