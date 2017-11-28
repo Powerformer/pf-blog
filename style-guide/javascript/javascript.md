@@ -1590,6 +1590,215 @@
     export default MyObj;
     ```
 
-**[⬆ back to top](#table-of-contents)**
+
+
+## 迭代器和生成器
+
+- 不要使用迭代器（`iterators`）。相比使用 `for-in` 或者 `for-of` ，应该更倾向与使用 `JavaScript` 的高阶函数。
+
+  > 为什么呢？这样能确保我们的不变形规则起作用。处理纯函数的返回值比有副作用的函数更加容易。
+
+  > 在遍历数组时，使用 `map()` / `every()` / `filter()` / `find()` / `findIndex()` / `reduce()` / `some()`
+
+  > 在遍历对象时，使用 `Object.keys()` / `Object.values()` / `Object.entries()` 来生成数组，从而取到对象的值。
+
+  ```javascript
+  const numbers = [1, 2, 3, 4, 5];
+
+  // bad
+  let sum = 0;
+  for (let num of numbers) {
+    sum += num;
+  }
+  sum === 15;
+
+  // good
+  let sum = 0;
+  numbers.forEach((num) => {
+    sum += num;
+  });
+  sum === 15;
+
+  // best (使用了函数的力量)
+  const sum = numbers.reduce((total, num) => total + num, 0)
+  sum === 15;
+
+  // bad
+  const increasedByOne = [];
+  for (let i = 0; i < numbers.length; i++) {
+    increasedByOne.push(numbers[i] + 1);
+  }
+
+  // good
+  const increasedByOne = [];
+  numbers.forEach((num) => {
+      increasedByOne.push(num + 1);
+  });
+
+  // best (继续使用函数....)
+  const increasedByOne = numbers.map(num => num + 1);
+  ```
+
+  ​
+
+
+- 目前不要使用生成器
+
+  > 为什么呢？他们目前还不能很好的被编译成 ES5
+
+
+- 如果你非得使用生成器，或者你不太认可我们下面的建议，至少得保证你的函数签名是用空格隔开的。
+
+  > 为什么呢？因为`function` 和 `*` 同一个概念的两个部分， `*` 不是 `function` 的修饰符，`function*` 是一个独立的构造函数，和 `function` 不同。
+
+  ```javascript
+  // bad
+  function * foo() {
+    // ...
+  }
+
+  // bad
+  const bar = function * () {
+    // ...
+  };
+
+  // bad
+  const baz = function *() {
+    // ...
+  };
+
+  // bad
+  const quux = function*() {
+    // ...
+  };
+
+  // bad
+  function*foo() {
+    // ...
+  };
+
+  // bad
+  function *foo() {
+    // ...
+  }
+
+  // very bad
+  function
+  *
+  foo() {
+    // ...
+  }
+
+  // very bad
+  const wat = function
+  *
+  () {
+    // ...
+  };
+
+  // good
+  function* foo() {
+    // ...
+  }
+
+  // good
+  const foo = function* () {
+    // ...
+  };
+  ```
+
+  ​
+
+## 属性
+
+- 使用 `dot notation` 来获取属性。
+
+  ```javascript
+  const tom = {
+    student: true,
+    age: 21,
+  };
+
+  // bad 
+  const isStudent = tom['student'];
+
+  // good
+  const isStudent = tom.student;
+  ```
+
+  ​
+
+
+- 如果你需要使用 `[]` 去获取属性时，使用变量。
+
+  ```javascript
+  const tom = {
+    student: true,
+    age: 21,
+  };
+
+  function getProp(prop) {
+    return tom[prop];
+  }
+
+  const isJedi = getProp('student');
+  ```
+
+  ​
+
+
+- 当计算乘方时，使用 `**` 操作符。
+
+  ```javascript
+  // bad
+  const binary = Math.pow(2, 10);
+
+  // good
+  const binary = 2 ** 10;
+  ```
+
+  ​
+
+
+
+## 变量
+
+- 总是使用 `const` 和 `let` 来申明变量。如果不这样做，就会导致全局变量。而我们要避免污染全局命名空间。
+
+  ```javascript
+  // bad
+  superPower = new SuperPower();
+
+  // good
+  const superPower = new SuperPower();
+  ```
+
+  ​
+
+
+
+- 每申明一个变量就使用一个 `const`， `let` 。
+
+  > 为什么呢？这样子很容易添加新的变量，而且你也不需要担心会把 `,` 写成 `;` 或者会因为标点符号的变化而引入版本管理工具的变化。在调试时，你也能每个变量申明都跳一步，而不是跳一次就跳到所有的变量。
+
+  ```javascript
+  // bad
+  const items = getItems(),
+        	goSportsTeam = true,
+        	dragonball = 'z';
+
+  // bad
+  // 相比上面的，试图指出这样会造成的问题。
+  const items = getItems(),
+        	goSportsTeam = true;
+        	dragonball = 'z';
+
+  // good
+  const items = getItems();
+  const goSportsTeam = true;
+  const dragonball = 'z';
+  ```
+
+  ​
 
 # };
