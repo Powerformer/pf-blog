@@ -1801,4 +1801,165 @@
 
   ​
 
+
+- 将所有的 `const` 和 所有的 `let` 分别放在一起。
+
+  > 为什么呢？对于以后你想赋值的变量，这个变量依赖于前一个已经被赋值的变量时，是很有用得。
+
+  ```javascript
+  // bad
+  let i, len, dragonball,
+      item = getItems(),
+      goSportsTeam = true;
+
+  // bad
+  let i;
+  const items = getItems();
+  let dragonball;
+  const goSportsTeam = true;
+  let len;
+
+  // good
+  const goSportsTeam = true;
+  const items = getItems();
+  let dragonball;
+  let i;
+  let length;
+  ```
+
+  ​
+
+
+- 在需要变量时，给其赋值，当时要把它们放置到合理的地方。
+
+  > 为什么呢？`let` 和 `const` 是块级作用域的，而不是函数作用域。 
+
+  ```javascript
+  // bad - 没有必要的函数调用
+  function checkName(hasName) {
+    // 可能没有必要的
+    const name = getName();
+    
+    if (hasName === 'test') {
+      return false;
+    }
+    
+    if (name === 'test') {
+      this.setName('');
+      return false;
+    }
+    
+    return name;
+  }
+
+  // good
+  function checkName(hasName) {
+    if (hasName === 'test') {
+      return false;
+    }
+    
+    const name = getName();
+    
+    if (name === 'test') {
+      this.setName('');
+      return false;
+    }
+    
+    return name;
+  }
+  ```
+
+  ​
+
+
+- 不要进行变量链式赋值。
+
+  > 为什么呢？链式赋值创造出了隐性全局变量。
+
+  ```javascript
+  // bad
+  (function example() {
+    // JavaScript 引擎将其解释为
+    // let a = ( b = ( c = 1 ) );
+    // 只有变量 a 是用let申明的，变量 b 和 c 变成了全局变量
+    let a = b = c = 1;
+  }());
+
+  console.log(a); // throws ReferenceError
+  console.log(b); // 1
+  console.log(c); // 1
+
+  // good
+  (function example() {
+    let a = 1;
+    let b = a;
+    let c = a;
+  }());
+
+  console.log(a); // throws ReferenceError
+  console.log(b); // throws ReferenceError
+  console.log(c); // throws ReferenceError
+
+  // 使用 const 时，情况和上面一致
+  ```
+
+  ​
+
+
+- 避免使用自加和自减（  `++` or `—`  ）。
+
+  > 为什么呢？根据 eslint 的文档，自加和自减语句会自动加入分号，而且在应用中使用自加和自减的值可能会造成静默失败错误。使用像 `num += 1` 这样的语句相比`num++` 或者 `num ++` 会表意更清楚。不允许使用自加和自减同时也避免你无意识的使用 `pre-incrementing / pre-decrementing` 值，这会给程序造成无法预期的行为。
+
+  ```javascript
+  // bad
+  const array = [1, 2, 3];
+  let num = 1;
+  num++;
+  --num;
+
+  let sum = 0;
+  let truthyCount = 0;
+  for (let i = 0; i < array.length; i++) {
+    let value = array[i];
+    sum += value;
+    if (value) {
+      truthyCount++;
+    }
+  }
+
+  // good
+  const array = [1, 2, 3];
+  let num = 1;
+  num += 1;
+  num -= 1;
+
+  const sum = array.reduce((a, b) => a + b, 0);
+  const truthyCount = array.filter(Boolean).length;
+  ```
+
+  ​
+
+
+
+## 提升 （ `Hoisting`）
+
+- `var` 申明会被提升到作用域顶部，而赋给他们的值不会提升。`const` 和`let` 申明带来了一个概念叫做：临时死区（Temporal Dead Zones（TDZ））。
+
+  ```javascript
+  // 我们知道下面是不可能起作用的(假定)
+  // 不存在 notDefined 全局变量
+  function example() {
+    console.log(notDefined); // => throws a ReferenceError
+  }
+
+  // 在你引用变量之后创建一个 var 变量会因为
+  // 变量提升
+  function example() {
+    console.log(declaredButNotAssigned); // => undefined
+    var declareButNotAssigned = true;
+  }
+  ```
+
+  ​
+
 # };
