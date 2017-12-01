@@ -1953,10 +1953,110 @@
   }
 
   // 在你引用变量之后创建一个 var 变量会因为
-  // 变量提升
+  // 变量提升使得其可以工作。注意：被赋的值`true`不会提升
   function example() {
     console.log(declaredButNotAssigned); // => undefined
     var declareButNotAssigned = true;
+  }
+
+  // 编译器会把变量声明提升到其作用域顶部。
+  // 这也意味着我们能够重写成如下形式：
+  function example() {
+    let declaredButNotAssigned;
+    console.log(declaredButNotAssigned); // => undefined
+    declaredButNotAssigned = true;
+  }
+
+  // 使用const 和 let
+  function example() {
+    console.log(declaredButNotAssigned); // => throw a ReferenceError
+    console.log(typeof declaredButNotAssigned); // => throws a ReferenceError
+    const declaredButNotAssigned = true;
+  }
+  ```
+
+  ​
+
+
+- 匿名函数表达式只是提升了他们的变量，而不是赋给他们的函数。
+
+  ```javascript
+  function example() {
+    console.log(anonymous); // => undefined
+    
+    anonymous(); // => TypeError anonymous is not a function
+    
+    var anonymous = function () {
+      console.log('anonymous function expression');
+    }
+  }
+  ```
+
+  ​
+
+
+- 命名函数表达式提升的是变量名，不是函数名或者函数体。
+
+  ```javascript
+  function example() {
+    console.log(named); // => undefined
+    
+    named(); // => TypeError named is not a function
+    
+    superPower(); // => ReferenceError superPower is not defined
+    
+    var named = function superPower() {
+      console.log('Flying');
+    };
+  }
+
+  // 即使函数名和变量名相同
+  // 结果也一样。
+  function example() {
+    console.log(named); // => undefined
+    
+    named(); // => TypeError named is not a function
+    
+    var named = function named() {
+      console.log('named');
+    };
+  }
+  ```
+
+  ​
+
+
+- 函数声明不仅提升他们的函数名而且提升函数体。
+
+  ```javascript
+  function example() {
+    superPower(); // => Flying
+    
+    function superPower() {
+      console.log('Flying');
+    }
+  }
+  ```
+
+  ​
+
+## 比较操作符和相等
+
+- 使用 `===` 和 `!==` ，而不要使用 `==` 和 `!=`。
+
+- 条件语句，例如 `if` 语句会使用 `ToBoolean` 抽象方法来强制转换其条件的值，这种强制转换总是遵守以下规则：
+
+  - **Objects** 转换为 **true**
+  - **Undefined** 转换为 **false**
+  - **Null** 转换为 **false**
+  - **Boolean** 转换为 相应的 **boolean** 值
+  - **Numbers** 只有当值是 **+0**，**-0**，和 **NaN**，转换后就是 **false**，其他转换后是 **true**
+  - **Strings** 当值为 空字符串时 `''` 转换后为 **false**，其他的转换后都是 **true**。
+
+  ```javascript
+  if ([0] && []) {
+    // true
+    // 一个数组，即使是空数组也是一个对象，对象总是转换为 true
   }
   ```
 
