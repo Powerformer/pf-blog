@@ -2062,4 +2062,165 @@
 
   ​
 
+
+- 对于布尔值使用简写，而对于字符串和数字明确使用比较操作符。
+
+  ```javascript
+  // bad
+  if (isValid === true) {
+    // ...
+  }
+
+  // good
+  if (isValid) {
+    // ...
+  }
+
+  // bad
+  if (name) {
+    // ...
+  }
+
+  // good
+  if (name !== '') {
+    // ...
+  }
+
+  // bad
+  if (collection.length) {
+    // ...
+  }
+
+  // good
+  if (collection.length > 0) {
+    // ...
+  }
+  ```
+
+  ​
+
+
+
+- 在包含词法申明的 `case` 和 `default` 语句中，使用大括号括起来来创建块级作用域。（eg. `let` ，`const` ， `function` ， 和 `class`）。
+
+  > 为什么呢？词法申明在整个 `switch` 块级作用域都是可见的，但是只有在进入 `case` 语句时，被赋值时才会被初始化。这在多个 `case` 语句中试图定义相同的东西时会有问题。
+
+  ```javascript
+  // bad
+  switch (foo) {
+    case 1:
+      let x = 1;
+      break;
+    case 2:
+      const y = 2;
+      break;
+    case 3:
+      function f() {
+        // ...
+      }
+      break;
+    default:
+      class C {}
+  }
+      
+  // good
+  switch (foo) {
+    case 1: {
+      let x = 1;
+      break;
+    }
+    case 2: {
+      const y = 2;
+      break;
+    }
+    case 3: {
+      function f() {
+        // ...
+      }
+      break;
+    }
+    case 4:
+      bar();
+      break;
+    default: {
+      class C {}
+    }
+  }
+  ```
+
+  ​
+
+
+- 三元操作符不应该嵌套，而通常应该是单行表达式。
+
+  ```javascript
+  // bad
+  const foo = maybe1 > maybe2
+  	? "bar"
+  	: value > value2 ? "baz" : null;
+
+  // 将其分成两个三元表达式
+  const mybeNull = value1 > value2 ? 'baz' : null;
+
+  // better
+  const foo = maybe1 > maybe2
+  	? 'bar'
+  	: maybeNull;
+
+  // best
+  const foo = maybe1 > maybe2 ? 'bar' : maybeNull;
+  ```
+
+  ​
+
+
+- 避免不必要的三元表达式语句。
+
+  ```javascript
+  // bad
+  const foo = a ? a: b;
+  const bar = c ? true : false;
+  const baz = c ? false : true;
+
+  // good
+  const foo = a || b;
+  const bar = !!c;
+  const baz = !c;
+  ```
+
+  ​
+
+
+
+- 当进行混合算术操作时，不要将 `**` 和 `%` 弄混了，也不要将他们和 `+` ， `-`，`*` ，`/` 弄混了。当他们混乱分布在语句中时，用圆括号区分他们。
+
+  ```javascript
+  // bad
+  const foo = a && b < 0 || c > 0 || d + 1 === 0;
+
+  // bad
+  const bar = a ** b - 5 % d;
+
+  // bad
+  if (a || b && c) {
+    return d;
+  }
+
+  // good
+  const foo = (a && b < 0) || c > 0 || (d + 1 === 0);
+
+  // good
+  const bar = (a ** b) - (5 % d);
+
+  // good
+  if ((a || b) && c) {
+    return d;
+  }
+
+  // good
+  const bar = a + b / c * d;
+  ```
+
+  ​
+
 # };
