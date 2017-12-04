@@ -2223,4 +2223,219 @@
 
   ​
 
+## 块级作用域
+
+- 对于所有多行块级代码，都使用大括号括起来。
+
+  ```javascript
+  // bad
+  if (test)
+    return false;
+
+  // good
+  if (test) return false;
+
+  // good
+  if (test) {
+    return false;
+  }
+
+  // bad
+  function foo() { return false; }
+
+  // good
+  function bar() {
+    return false;
+  }
+  ```
+
+  ​
+
+
+- 如果你的 `if` 和 `else` 后面跟了多行块级代码，将 `else` 放在 `if` 语句结束大括号的那一行后面。
+
+  ```javascript
+  // bad
+  if (test1) {
+    thing1();
+    thing2();
+  }
+  else {
+    thing3();
+  }
+
+  // good
+  if (test) {
+    thing1();
+    thing2();
+  } else {
+    thing3();
+  }
+  ```
+
+  ​
+
+
+
+- 如果一个 `if` 语句块总是会执行 `return` 语句，那么紧跟其后的 `else` 语句块就是没必要的。跟在 `if` 语句块后的 `else if` 语句块如果包含 `return` 语句，那么可以把它分隔成多行 `if` 语句。
+
+  ```javascript
+  // bad
+  function foo() {
+    if (x) {
+      return x;
+    } else {
+      return y;
+    }
+  }
+
+  // good
+  function foo() {
+    if (x) {
+      return x;
+    }
+    
+    return y;
+  }
+
+  // bad
+  function cats() {
+    if (x) {
+      return x;
+    } else if(y) {
+      return y;
+    }
+  }
+
+  // bad
+  function dogs() {
+    if (x) {
+      return x;
+    } else {
+      if (y) {
+        return y;
+      }
+    }
+  }
+
+  // good
+  function cats() {
+    if (x) {
+      return x;
+    }
+    
+    if (y) {
+      return y;
+    }
+  }
+
+  // good
+  function dogs(x) {
+    if (x) {
+      if (z) {
+        return y;
+      }
+    } else {
+      return z;
+    }
+  }
+  ```
+
+  ​
+
+
+
+## 控制语句
+
+- 要避免你的控制语句（`if` , `while` etc.）太长，以至于超过一行最大限制的长度，每个条件都可以放在新的一行。逻辑操作符应该在这行的开头。
+
+  > 为什么呢？要求逻辑操作符在每行的开始可以突出操作符，而且这和方法的链式调用的模式很像。而且，通过更简洁的可视化语句，让后面复杂的逻辑更易读懂。
+
+  ```javascript
+  // bad
+  if ((foo === 123 || bar === 'abc') && doesItLookGoodWhenItBecomesThatLong() && isThisReallyHappening()) {
+    thing1();
+  }
+
+  // bad
+  if (foo === 123
+      && bar === 'abc') {
+    thing1();
+  }
+
+  // bad
+  if (foo === 123 &&
+      bar === 'abc') {
+    thing1();
+  }
+
+  // bad
+  if (
+    foo === 123 &&
+    bar === 'abc'
+  ) {
+    thing1();
+  } 
+
+  // good
+  if (
+    foo === 123
+    && bar === 'abc'
+  ) {
+    thing1();
+  }
+
+  // good
+  if (
+    (foo === 123 || bar === 'abc')
+    && doesItLookGoodWhenItBecomesThatLong()
+    && isThisReallyHappening()
+  ) {
+    thing1();
+  }
+
+  // good
+  if (foo === 123 && bar === 'abc') {
+    thing1();
+  }
+  ```
+
+  ​
+
+## 注释
+
+- 多行注释使用 `/** ... */`。
+
+  ```javascript
+  // bad
+
+  // make() returns a new element
+  // based on the passed in tag name
+  //
+  // @params {String} tag
+  // @return {Element} element
+  function make(tag) {
+    
+    // ...
+    return element;
+  }
+
+  // good
+
+  /**
+   * make() returns a new element
+   * based on the passed in tag name
+   *
+   * @params {String} tag
+   * @return {Element} element
+   */
+  function make(tag) {
+    
+    // ...
+    return element;
+  }
+  ```
+
+  ​
+
 # };
