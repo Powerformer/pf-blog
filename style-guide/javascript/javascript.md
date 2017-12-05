@@ -2438,4 +2438,172 @@
 
   ​
 
+
+- 单行注释使用 `//` ，在需要注释的主体之上另起一行写注释。在行注释之前空一行，除非行注释是块级作用域代码的第一行。
+
+  ```javascript
+  // bad
+  const active = true; // is current tab
+
+  // good
+  // is current tab
+  const active = true;
+
+  // bad
+  function getType() {
+    console.log('fetching type...');
+    // set the default type to 'no type'
+    const type = this.type || 'no type';
+    
+    return type;
+  }
+
+  // good
+  function getType() {
+    console.log('fetching type...');
+    
+    // set the default type to 'no type'
+    const type = this.type || 'no-type';
+    
+    return type;
+  }
+
+  // also good
+  function getType() {
+    // set the default type to 'no type'
+    const type = this.type || 'no type';
+    
+    return type;
+  }
+  ```
+
+  ​
+
+
+- 每行注释开始前，都用空格与注释符号分隔开来，使得注释代码更具可读性。
+
+  ```javascript
+  // bad
+  //is current tab
+  const active = true;
+
+  // good
+  // is current tab
+  const active = true;
+
+  // bad
+  /**
+   *make() returns a new element
+   *based on the passed-in tag name
+   */
+  function make(tag) {
+    
+    // ...
+    
+    return element;
+  }
+
+  // good
+  /**
+   * make() returns a new element
+   * based on the passed-in tag name
+   */
+  function make(tag) {
+    
+    // ...
+    
+    return element;
+  }
+  ```
+
+  ​
+
+
+- 在注释的首部加上 `FIXME` 或者 `TODO` ，这样能帮助其他开发者更快的知道你是在指出一个需要重新访问问题，或者是你给问题提出了一种需要改进的解决方案。这些带上首部的注释和常规的注释不一样，因为他们是 可起作用的。 `FIXME` 动作表示：需要解决这个问题。 `TODO` 动作表示：需要改进这个问题。
+
+- 使用 `// FIXME` 来给问题做注释。
+
+  ```javascript
+  class Calculator extends Abacus {
+    constructor() {
+      super();
+      
+      // FIXME：不应该在这里使用全局变量
+      total = 0;
+    }
+  }
+  ```
+
+  ​
+
+
+- 使用 `// TODO` 来给问题做注释。
+
+  ```javascript
+  class Calculator extends Abacus {
+    constructor() {
+      super();
+      
+      // TODO：total应该能使用 options param 修改
+      this.total = 0;
+    }
+  }
+  ```
+
+  ​
+
+
+
+## 空格
+
+- 编辑器制表符为两个空格。
+
+  ```javascript
+  // bad
+  function foo() {
+  ....let name;
+  }
+
+  // bad
+  function bar() {
+  .let name;
+  }
+
+  // good
+  function baz() {
+  ..let name;
+  }
+  ```
+
+  ​
+
+
+- 在大括号开头之前加一个空格。
+
+  ```javascript
+  // bad
+  function test(){
+    console.log('test');
+  }
+
+  // good
+  function test() {
+    console.log('test');
+  }
+
+  // bad
+  dog.set('attr',{
+    age: '1 year',
+    breed: 'Bernese Mountain Dog',
+  });
+
+  // good
+  dog.set('attr', {
+    age: '1 year',
+    breed: 'Bernese Mountain Dog',
+  });
+  ```
+
+  ​
+
 # };
