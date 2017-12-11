@@ -2606,4 +2606,310 @@
 
   ​
 
+
+- 在控制流语句的开圆括号之前加一个空格（ `if`， `while` ，etc）。在函数申明和调用时，不要在函数名和参数列表之间加上空格。
+
+  ```javascript
+  // bad
+  if (isJedi) {
+    fight ();
+  }
+
+  // good
+  if (isJedi) {
+    fight();
+  }
+
+  // bad
+  function fight () {
+    console.log('Swoosh!');
+  }
+
+  // good
+  function fight() {
+    console.log('Swoosh!');
+  }
+  ```
+
+
+
+- 在操作符两端加上空格。
+
+  ```javascript
+  // bad
+  const x=y+5;
+
+  // good
+  const x = y + 5;
+  ```
+
+  ​
+
+
+- 文件尾部结束时要新开一行。
+
+  ```javascript
+  // bad
+  import { es6 } from './PowerformerStyleGuide';
+
+  // ...
+  export default es6;
+
+
+  // bad
+  import { es6 } from './PowerformerStyleGuide';
+
+  // ...
+  export default es6; ↵
+  ↵
+
+  // good
+  import { es6 } from './PowerformerStyleGuide';
+
+  // ...
+  export default es6; ↵
+  ```
+
+  ​
+
+
+- 当进行很长的链式方法调用时，使用缩进。让 **点** 在每行开头，因为这能强调这一行是一个方法调用，而不是一条新语句。
+
+  ```javascript
+  // bad
+  $('#items').find('.selected').highlight().end().find('.open').updateCount();
+
+  // bad
+  $('#items').
+  	find('.selected').
+  		highlight().
+  		end().
+  	find('.open').
+  		updateCount();
+
+  // good
+  $('#items')
+  	.find('.selected')
+  		.hightlight()
+  		.end()
+  	.find('.open')
+  		.updateCount();
+
+  // bad
+  const leds = stage.selectAll('.led').data(data).enter().append('svg:svg').classed('led', true)
+  	.attr('width', (radius + margin) * 2).append('svg:g')
+  	.attr('transform', `translate(${radius + margin}, ${radius + margin})`)
+  	.call(tron.led);
+
+  // good
+  const leds = stage.selectAll('.led')
+  	.data(data)
+     .enter().append('svg:g')
+  	.classed('led', true)
+  	.attr('width', (radius + margin) * 2)
+     .append('svg:g')
+  	.attr('transform', `translate(${radius + margin}, ${radius + margin})`)
+  	.call(tron.led);
+
+  // good
+  const leds = stage.selectAll('.led').data(data);
+  ```
+
+  ​
+
+
+- 在一个代码块结束后和另一条语句开始之前加一个空格。
+
+  ```javascript
+  // bad
+  if (foo) {
+    return bar;
+  }
+  return baz;
+
+  // good
+  if (foo) {
+    return bar;
+  }
+
+  return baz;
+
+  // bad
+  const obj = {
+    foo() {
+      
+    },
+    bar() {
+      
+    },
+  };
+  return obj;
+
+  // good
+  const obj = {
+    foo() {
+      
+    },
+    
+    bar() {
+      
+    },
+  };
+
+  // bad
+  const arr = [
+    function foo() {
+      
+    },
+    function bar() {
+      
+    },
+  ];
+  return arr;
+
+  // good
+  const arr = [
+    function foo() {
+      
+    },
+    
+    function bar() {
+      
+    },
+  ];
+
+  return arr;
+  ```
+
+  ​
+
+
+- 不要在代码块中加入空行。
+
+  ```javascript
+  // bad
+  function bar() {
+    
+    console.log(foo);
+    
+  }
+
+  // bad
+  if (baz) {
+    
+    console.log(qux);
+  } else {
+    console.log(foo);
+  }
+
+  // bad
+  class Foo {
+    
+    constructor(bar) {
+      this.bar = bar;
+    }
+  }
+
+  // good
+  function bar() {
+    console.log(foo);
+  }
+
+  // good
+  if (baz) {
+    console.log(qux);
+  } else {
+    console.log(foo);
+  }
+  ```
+
+  ​
+
+
+- 不要在圆括号里面加空格。
+
+  ```javascript
+  // bad
+  function bar( foo ) {
+    return foo;
+  }
+
+  // good
+  function bar(foo) {
+    return foo;
+  }
+
+  // bad
+  if ( foo ) {
+    console.log(foo);
+  }
+
+  // good
+  if (foo) {
+    console.log(foo);
+  }
+  ```
+
+  ​
+
+
+- 不要在方括号里 **两侧** 加空格
+
+  ```javascript
+  // bad
+  const foo = [ 1, 2, 3 ];
+  console.logg(foo[ 0 ]);
+
+  // good
+  const foo = [1, 2, 3];
+  console.log
+  ```
+
+  ​
+
+
+- 在大括号里面加空格
+
+  ```javascript
+  // bad
+  const foo = {clark: 'kent'};
+
+  // good
+  const foo = { clark: 'kent' };
+  ```
+
+  ​
+
+
+- 避免一行的代码超过100个字符。注意：与前面对于字符串的长度限制不一样。
+
+  > 为什么呢？这确保了可读性和可维护性。
+
+  ```javascript
+  // bad
+  const foo = jsonData && jsonData.foo && jsonData.foo.bar && jsonData.foo.bar.baz && jsonData.foo.bar.baz.quux && jsonData.foo.bar.baz.quux.xyzzy;
+
+  // bad
+  $.ajax({ method: 'POST', url: 'https://airbnb.com/', data: { name: 'John' } }).done(() => console.log('Congratulations!')).fail(() => console.log('You have failed this city.'));
+
+  // good
+  const foo = jsonData
+  	&& jsonData.foo
+  	&& jsonData.foo.bar
+  	&& jsonData.foo.bar.baz
+  	&& jsonData.foo.bar.baz.quux
+  	&& jsonData.foo.bar.quux.xyzzy;
+
+  // good
+  $.ajax({
+    method: 'POST',
+    url: 'https://powerformer.com/',
+    data: { name: 'pftom' },
+  })
+  	.done(() => console.log('Congratulations!'))
+  	.fail(() => console.log('You have failed this city.'))
+  ```
+
+  ​
+
 # };
