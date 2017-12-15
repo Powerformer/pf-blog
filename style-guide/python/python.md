@@ -755,6 +755,7 @@ def chase():
     cat.chase(mouse)
 ```
 
+
 # Powerformer 推荐风格
 
 ## 行长
@@ -810,6 +811,70 @@ from .serializers import (
     LionSerializer
 )
 ```
+
+## 文档字符串
+
+[PEP257](https://www.python.org/dev/peps/pep-0257/) 对文档字符串的使用进行了标准化的说明。这里我们择其精华，并加入了 Powerformer 的建议。
+
+### 单行文档字符串
+
+```python
+def kos_root():
+    """Return the pathname of the KOS root directory."""
+    global _kos_root
+    if _kos_root:
+        return _kos_root
+    ...
+```
+
+- 两侧的引号应该都在一行上。
+
+- 在文档字符串前后续都没有空行。
+
+- 以英文句号结尾。
+
+- 内容应当**以命令的方式规定函数或方法的作用**，而不是单纯的描述：
+
+```python
+# Note the docstring is a description, which is not enough
+def function(a, b):
+    """Returns the pathname ..."""
+```
+
+- 文档字符串不应当是函数（方法）的签名：
+
+```python
+# Don't do this
+def function(a, b):
+    """function(a, b) -> list"""
+```
+
+### 多行文档字符串
+
+```python
+def complex(real=0.0, imag=0.0):
+    """Form a complex number.
+
+    Keyword arguments:
+    real -- the real part (default 0.0)
+    imag -- the imaginary part (default 0.0)
+    """
+    if imag == 0.0 and real == 0.0:
+        return complex_zero
+    ...
+```
+
+- 第一行应当包含一句简短的概括，后面跟空行，然后是详细的说明。
+
+- 函数或方法的文档字符串应当概括其行为，然后记录它的参数、返回值、副作用、异常和调用限制。
+
+- 类的文档字符串后应该跟一行空行（和第一个方法保持一行空行），并概括其行为，列举所有公共方法和实例变量。
+
+- 脚本（独立程序）的文档字符串应当用作它的使用说明信息（例如当错误使用或用 `-h` 打印帮助信息时）—— 脚本的功能和命令行语法、环境变量和文件等等。
+
+- 模块的文档字符串应当列举出此模块暴露出的所有类、异常和函数（每个给予一行概括说明）。
+
+- 包的文档字符串（一般在此包的 `__init__.py` 文件中）应当列举出此包暴露出的所有模块和子包。
 
 ## 再谈 `import`
 
