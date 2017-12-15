@@ -2654,6 +2654,7 @@
 
   // ...
   export default es6;
+  ```
 
 
   // bad
@@ -2908,6 +2909,192 @@
   })
   	.done(() => console.log('Congratulations!'))
   	.fail(() => console.log('You have failed this city.'))
+  ```
+
+  ​
+
+
+
+## 逗号
+
+- 前置逗号？不要这样。
+
+  ```javascript
+
+  // bad
+  const story = [
+      once
+    , upon
+    , aTime
+  ];
+
+  // good
+  const story = [
+    once,
+    upon,
+    aTime,
+  ];
+
+  // bad
+  const hero = {
+      firstName: 'ADa'
+    , lastName: 'Lovelace',
+    , birthYear: 1815
+    , superPower: 'computer'
+  };
+
+  // good
+  const hero = {
+    firtName: 'Ada',
+    lastName: 'Lovelace',
+    birthYear: 1815,
+    superPower: 'computers',
+  };
+  ```
+
+  ​
+
+
+- 加上额外的尾逗号。
+
+  > 为什么呢？这样会使得 git diff 更干净。而且，像 Babel 这样的编译器在编译后的代码里会去除额外的尾逗号，所以你不需要担心在老的浏览器里面会有尾逗号问题。
+
+  ```javascript
+  // bad - git diff without trailing comma
+  const hero = {
+       firstName: 'Florence',
+  -    lastName: 'Nightingale'
+  +    lastName: 'Nightingale',
+  +    inventorOf: ['coxcomb chart', 'modern nursing']
+  };
+
+  // good - git diff with trailing comma
+  const hero = {
+       firstName: 'Florence',
+       lastName: 'Nightingale',
+  +    inventorOf: ['coxcomb chart', 'modern nursing'],
+  };
+  ```
+
+  ```javascript
+  // bad
+  const hero = {
+    firstName: 'Dana',
+    lastName: 'Scully'
+  };
+
+  const heros = [
+    'Batman',
+    'Superman'
+  ];
+
+  // good
+  const hero = {
+    firstName: 'Dana',
+    lastName: 'Scully',
+  };
+
+  const heroes = [
+    'Batman',
+    'Superman',
+  ];
+
+  // bad
+  function createHero(
+    firstName,
+    lastName,
+    inventorOf
+  ) {
+   // does nothing    
+  }
+
+  // good
+  function createHero(
+    firstName,
+    lastName,
+    inventorOf,
+  ) {
+    // does nothing    
+  }
+
+  // good (注意：不要在 "rest"元素 后面出现逗号)
+  function createHero(
+    firstName,
+    lastName,
+    inventorOf,
+    ...heroArgs
+  ) {
+   // does nothing    
+  }
+
+  // bad
+  createHero(
+    firstName,
+    lastName,
+    inventorOf
+  );
+
+  // good
+  createHero(
+    firstName,
+    lastName,
+    inventorOf,
+  );
+
+  // good (注意：不要在 "rest"元素 后面出现逗号)
+  createHero(
+    firstName,
+    lastName,
+    inventorOf,
+    ...heroArgs,
+  );
+  ```
+
+  ​
+
+
+
+- **Yup.**
+
+  > 为什么呢？当 JS 遇到没有分号的换行符时，它使用被称为 **Automatic Semicolon Insertion** 的一系列规则来确定是否将这个换行符认为是一句的结尾，而且正如这个名字所隐含的，如果他认为这个换行符是一行语句的结尾，它就会加上分号。**ASI** 包含一些奇怪的行为，因此，你的程序将会因为 JS 对换行符的误判而出错。而且当新特性加入 JS 中时，这些规则会变得更加复杂。所以，明确以分号结束一行语句，以及使用 **Linter** 工具来捕捉缺失分号将会帮助你不会遇上这些问题。
+
+  ```javascript
+  // bad - 引起异常
+  const luke = {}
+  const leia = {}
+  [luke, leia].forEach(jedi => jedi.father = 'vader')
+
+  // bad - 引起异常
+  const reaction = "No! That's impossible!";
+  (async function meanwhileOnTheFalcon() {
+    // handle `leia`, `lando`, `chewie`, `r2`, `c3p0`
+    // ...
+  }())
+
+  // bad - return `undefined` 而不是下一行的值，因为 `ASI`，当 `return` 在单独的一行时总会变成这样。
+  function foo() {
+    return 
+    	`seaech your feelings, you know it to foo`
+  }
+
+  // good
+  const luke = {};
+  const leia = {};
+  [luke, leia].forEach((jedi) => {
+    jedi.father = 'vader';
+  });
+
+  // good
+  const reaction = "No! That's impossible!";
+  (async function meanwhileOnTheFalcon() {
+    // handle `leia`, `lando`, `chewie`, `r2`, `c3p0`
+    // ...
+  });
+
+  // good
+  function foo() {
+    return 'search your feelings, you know it to be foo';
+  }
   ```
 
   ​
