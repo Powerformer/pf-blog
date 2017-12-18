@@ -3050,8 +3050,11 @@
   );
   ```
 
-  ​
 
+
+
+
+## Semicolons
 
 
 - **Yup.**
@@ -3095,6 +3098,107 @@
   function foo() {
     return 'search your feelings, you know it to be foo';
   }
+  ```
+
+  ​
+
+## Type Casting & Coercion
+
+- 在代码块开始处就进行强制类型转换。
+
+
+
+- Strings
+
+  ```javascript
+  // => this.reviewScore = 9;
+
+  // bad
+  const totalScore = new String(this.reviewScore); // typeof totalScore is "object" not "string"
+
+  // bad
+  const totalScore = this.reviewScore + ''; // invokes this.reviewScore.valueOf()
+
+  // bad
+  const totalScore = this.reviewScore.toString(); // 不能保证返回一个 `string`
+
+  // good
+  const totalScore = String(this.reviewScore);
+  ```
+
+  ​
+
+
+
+- Numbers: 使用 `Number` 做强制类型的转换，总是使用 `parseInt` 带上进制参数来解析字符串。
+
+  ```javascript
+  const inputValue = '4';
+
+  // bad
+  const val = new Number(inputValue);
+
+  // bad
+  const val = +inputValue;
+
+  // bad
+  const val = inputValue >> 0;
+
+  // bad
+  const val = parseInt(inputValue);
+
+  // good
+  const val = Number(inputValue);
+
+  // good
+  const val = parseInt(inputValue, 10);
+  ```
+
+  ​
+
+
+
+- 如果因为某些原因，你做了些疯狂的事，`parseInt` 成了你的性能瓶颈，这是你需要用 位唯一来解决性能问题时，在其前面写下注释解释你为什么这样做。
+
+  ```javascript
+  // good
+  /**
+   * parseInt was the reason my code was slow.
+   * Bitshifting the String to coerce it to a
+   * Number made it a lot faster.
+   */
+  const val = inputValue >> 0;
+  ```
+
+  ​
+
+
+
+- 使用位运算时要当心，Number代表64位的值，但是位运算总是返回32位的整数。当整数大于32位时，位位移可能导致无法预期的操作。最大的32位有符号整型：2, 147, 483, 647
+
+  ```javascript
+  2147483647 >> 0; // => 2147483647
+  2147483648 >> 0; // => -2147483648
+  2147483649 >> 0; // => -2147483647
+  ```
+
+  ​
+
+
+
+- Booleans
+
+  ```javascript
+  const age = 0;
+
+  // bad
+  const hasAge = new Boolean(age);
+
+  // good
+  const hasAge = Boolean(age);
+
+  // best
+  const hasAge = !!age;
   ```
 
   ​
