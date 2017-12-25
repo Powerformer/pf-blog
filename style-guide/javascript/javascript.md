@@ -3203,4 +3203,150 @@
 
   ​
 
+
+
+## Naming Conventions
+
+- 避免使用一个字母的命名。让你的名字是具有描述力的。
+
+  ```javascript
+  // bad
+  function q() {
+    // ...
+  }
+
+  // good
+  function query() {
+    // ...
+  }
+  ```
+
+  ​
+
+
+
+- 在给对象，函数，或者实例命名时，使用驼峰式命名（`camelCase`）。
+
+  ```javascript
+  // bad
+  const OBJEcttsssss = {};
+  const this_is_my_object = {};
+  function c() {}
+
+  // good
+  const thisIsMyObject = {};
+  function thisIsMyFunction() {}
+  ```
+
+  ​
+
+
+
+- 再给构造函数或者类命名时，使用 `PascalCase` 命名。
+
+  ```javascript
+  // bad
+  function user(options) {
+    this.name = options.name;
+  }
+
+  const bad = new user({
+    name: 'nope',
+  });
+
+  // good
+  class User {
+    constructor(options) {
+      this.name = options.name;
+    }
+  }
+
+  const good = new User({
+    name: 'yup',
+  });
+  ```
+
+  ​
+
+
+
+- 不要使用首部或尾部下划线。
+
+  > 为什么呢？因为 JavaScript 就属性和方法而言是没有私有这一概念的。尽管首部下划线这一概念普遍被认为是 “私有的”，实际上，这些属性完全是公有的。同样的，它是你的公开 API 的一部分。这个习惯可能会误导大多数开发者，让他们认为在这些属性上的改变是可以忽略的，而且对他们进行测试也是没有必要的。简而言之，如果你想要某些东西是 “私有的” ，那么必须使其不可见的
+
+  ```javascript
+  // bad
+  this._firstName_ = 'Panda';
+  this.firstName_ = 'Panda';
+  this._firstName = 'Panda';
+
+  // good
+  this.firstName = 'Panda';
+  ```
+
+  ​
+
+
+
+- 不要保存 `this` 的引用。而要使用箭头函数或者 使用函数的绑定（`Function#bind`）。
+
+  ```javascript
+  // bad
+  function foo() {
+    const self = this;
+    return function () {
+      console.log(self);
+    };
+  }
+
+  // bad
+  function foo() {
+    const that = this;
+    return function () {
+      console.log(that);
+    };
+  }
+
+  // good
+  function foo() {
+    return () => {
+      console.log(this);
+    };
+  }
+  ```
+
+  ​
+
+
+
+- basename 应该要和它的默认导出 (`default export`) 的名字一样。
+
+  ```javascript
+  // file 1 contents
+  class CheckBox {
+    // ...
+  }
+
+  export default CheckBox;
+
+  // file 2 contents
+  export default function fortyTwo() { return 42; }
+
+  // file 3 contents
+  export default function insideDirectory() {}
+
+  // in some other file
+  // bad
+  import CheckBox from './checkBox'; // PascalCase import/export, camelCase filename
+  import FortyTwo from './FortyTwo'; // PascalCase import/filename, camelCase export
+  import InsideDirectory from './InsideDirectory';  // PascalCase import/filename, camelCase export
+
+  // bad
+  import CheckBox from './check_box'; // PascalCase import/export, snake_case filename
+  import forty_two from './forty_two'; // snake_case import/filename, camelCase export
+  import index from './inside_directory/index'; // requiring
+  ```
+
+  ​
+
 # };
